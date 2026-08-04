@@ -8,6 +8,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    preview: {
+      port: 10000,
+      host: true,
+      allowedHosts: true,
+    },
     server: {
       port: 3000,
       host: true,
