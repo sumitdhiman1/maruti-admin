@@ -1,0 +1,13 @@
+/* Reset default Next.js dark styles to preserve pure HTML design styling */
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+  color: #535353;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+}
