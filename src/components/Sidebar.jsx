@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Layers, Compass, Quote, Calendar } from 'lucide-react';
+import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Layers, Compass, Quote, Calendar, Briefcase, MessageSquare, Mail } from 'lucide-react';
 
 const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'divisions', 'mission-vision', 'reviews'];
 
@@ -125,6 +125,32 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           >
             <Calendar size={20} />
             <span>Events</span>
+          </button>
+        </li>
+
+        {/* Contact Messages */}
+        <li className={`menu-item ${activeTab === 'contact-messages' ? 'active' : ''}`}>
+          <button
+            onClick={() => {
+              setActiveTab('contact-messages');
+              setHomeOpen(false);
+            }}
+          >
+            <MessageSquare size={20} />
+            <span>Contact Messages</span>
+          </button>
+        </li>
+
+        {/* Newsletter Subscribers */}
+        <li className={`menu-item ${activeTab === 'newsletter-subscribers' ? 'active' : ''}`}>
+          <button
+            onClick={() => {
+              setActiveTab('newsletter-subscribers');
+              setHomeOpen(false);
+            }}
+          >
+            <Mail size={20} />
+            <span>Newsletter</span>
           </button>
         </li>
       </ul>

@@ -11,6 +11,17 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem('maruti_token'));
   const [loading, setLoading] = useState(false);
 
+  // Sync URL bar on session change
+  useEffect(() => {
+    if (user && window.location.pathname === '/login') {
+      const savedTab = localStorage.getItem('maruti_admin_tab') || 'dashboard';
+      const targetPath = savedTab === 'dashboard' ? '/' : `/${savedTab}`;
+      window.history.replaceState(null, '', targetPath);
+    } else if (!user && window.location.pathname !== '/login') {
+      window.history.replaceState(null, '', '/login');
+    }
+  }, [user]);
+
   const login = async (email, password) => {
     setLoading(true);
     try {
@@ -20,6 +31,13 @@ export const AuthProvider = ({ children }) => {
       setToken(data.token);
       localStorage.setItem('maruti_token', data.token);
       localStorage.setItem('maruti_user', JSON.stringify(data));
+      
+      const savedTab = localStorage.getItem('maruti_admin_tab') || 'dashboard';
+      const targetPath = savedTab === 'dashboard' ? '/' : `/${savedTab}`;
+      if (window.location.pathname === '/login') {
+        window.history.replaceState(null, '', targetPath);
+      }
+
       setLoading(false);
       return { success: true };
     } catch (error) {
@@ -36,6 +54,10 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('maruti_token');
     localStorage.removeItem('maruti_user');
+    localStorage.removeItem('maruti_admin_tab');
+    if (window.location.pathname !== '/login') {
+      window.history.replaceState(null, '', '/login');
+    }
   };
 
   return (
