@@ -15,11 +15,12 @@ import ContactMessagesPage from './pages/ContactMessagesPage';
 import NewsletterPage from './pages/NewsletterPage';
 import CareersPage from './pages/CareersPage';
 import DepartmentsPage from './pages/DepartmentsPage';
+import VideoManagementPage from './pages/VideoManagementPage';
 
 const VALID_TABS = [
   'dashboard', 'products', 'departments', 'hero-section', 'certifications', 'about-section',
   'divisions', 'mission-vision', 'reviews', 'events', 'careers',
-  'contact-messages', 'newsletter-subscribers'
+  'contact-messages', 'newsletter-subscribers', 'home-video'
 ];
 
 const getTabFromURL = () => {
@@ -89,6 +90,7 @@ const MainLayout = () => {
           {activeTab === 'careers' && <CareersPage />}
           {activeTab === 'contact-messages' && <ContactMessagesPage />}
           {activeTab === 'newsletter-subscribers' && <NewsletterPage />}
+          {activeTab === 'home-video' && <VideoManagementPage />}
         </main>
       </div>
     </div>

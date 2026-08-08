@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Layers, Compass, Quote, Calendar, Briefcase, MessageSquare, Mail, Package } from 'lucide-react';
+import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Layers, Compass, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film } from 'lucide-react';
 
-const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'mission-vision', 'reviews'];
+const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'mission-vision', 'reviews', 'home-video'];
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const isHomeSubTab = homeSubTabs.includes(activeTab);
@@ -125,6 +125,16 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                 >
                   <Quote size={16} />
                   <span>Client Reviews</span>
+                </button>
+              </li>
+
+              <li className={`menu-item ${activeTab === 'home-video' ? 'active' : ''}`}>
+                <button
+                  onClick={() => setActiveTab('home-video')}
+                  style={{ padding: '8px 12px', fontSize: '0.88rem' }}
+                >
+                  <Film size={16} />
+                  <span>Home Video</span>
                 </button>
               </li>
             </ul>
