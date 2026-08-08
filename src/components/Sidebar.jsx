@@ -50,6 +50,19 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           </button>
         </li>
 
+        {/* Departments Menu */}
+        <li className={`menu-item ${activeTab === 'departments' ? 'active' : ''}`}>
+          <button
+            onClick={() => {
+              setActiveTab('departments');
+              setHomeOpen(false);
+            }}
+          >
+            <Building2 size={20} />
+            <span>Departments</span>
+          </button>
+        </li>
+
         {/* Home Section Dropdown */}
         <li className="menu-item">
           <button
