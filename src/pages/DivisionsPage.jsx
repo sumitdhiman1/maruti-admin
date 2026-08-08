@@ -1,14 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../services/api';
 import DivisionModal from '../components/DivisionModal';
-import { Layers, Plus, Edit3, Trash2, Sparkles, ArrowRight, CheckCircle } from 'lucide-react';
+import { Package, Plus, Edit3, Trash2, RotateCcw, Search, Filter, CheckCircle, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const ITEMS_PER_PAGE = 15;
 
 const DivisionsPage = () => {
-  const [items, setItems] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDivision, setSelectedDivision] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
+  const [seeding, setSeeding] = useState(false);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -16,104 +23,123 @@ const DivisionsPage = () => {
   };
 
   useEffect(() => {
-    fetchDivisions();
+    fetchProducts();
   }, []);
 
-  const fetchDivisions = async () => {
+  const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/divisions');
-      setItems(response.data);
+      const response = await api.get('/products');
+      setProducts(response.data || []);
     } catch (error) {
-      console.error('Error fetching strategic divisions:', error);
+      console.error('Error fetching products:', error);
     } finally {
       setLoading(false);
     }
   };
 
+  // Dynamic Divisions list based on database products and defaults
+  const dynamicDivisions = useMemo(() => {
+    const defaultDivs = ['Derma A', 'Derma B', 'Evara', 'Elzac'];
+    const dbDivs = products.map((p) => p.division).filter(Boolean);
+    const combined = Array.from(new Set([...defaultDivs, ...dbDivs])).sort();
+    return ['All', ...combined];
+  }, [products]);
+
+  // Dynamic Categories list based on selected division
+  const availableCategories = useMemo(() => {
+    const filteredByDiv = selectedDivision === 'All'
+      ? products
+      : products.filter((p) => p.division === selectedDivision);
+
+    const cats = Array.from(new Set(filteredByDiv.map((p) => p.category).filter(Boolean)));
+    return ['All', ...cats.sort()];
+  }, [products, selectedDivision]);
+
+  // Reset category filter if selected category is not in availableCategories
+  useEffect(() => {
+    if (!availableCategories.includes(selectedCategory)) {
+      setSelectedCategory('All');
+    }
+    setCurrentPage(1);
+  }, [selectedDivision, availableCategories, selectedCategory]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  // Filtered Products for rendering
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) => {
+      if (selectedDivision !== 'All' && p.division !== selectedDivision) return false;
+      if (selectedCategory !== 'All' && p.category !== selectedCategory) return false;
+
+      if (searchQuery.trim() !== '') {
+        const q = searchQuery.toLowerCase();
+        const matchesName = p.name ? p.name.toLowerCase().includes(q) : false;
+        const matchesComp = p.composition ? p.composition.toLowerCase().includes(q) : false;
+        const matchesCat = p.category ? p.category.toLowerCase().includes(q) : false;
+        return matchesName || matchesComp || matchesCat;
+      }
+
+      return true;
+    });
+  }, [products, selectedDivision, selectedCategory, searchQuery]);
+
+  // Pagination calculation
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredProducts.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredProducts, currentPage]);
+
   const handleSave = async (formData) => {
     try {
       if (editingItem) {
-        await api.put(`/divisions/${editingItem.id}`, formData);
-        showToast('Strategic division card updated successfully! 🎉');
+        await api.put(`/products/${editingItem.id}`, formData);
+        showToast('Product updated successfully! 🎉');
       } else {
-        await api.post('/divisions', formData);
-        showToast('New strategic division card added successfully! 🎉');
+        await api.post('/products', formData);
+        showToast('New product added successfully! 🎉');
       }
       setIsModalOpen(false);
       setEditingItem(null);
-      fetchDivisions();
+      fetchProducts();
     } catch (error) {
-      alert('Failed to save division card: ' + (error.response?.data?.message || error.message));
+      alert('Failed to save product: ' + (error.response?.data?.message || error.message));
     }
   };
 
   const handleDelete = async (id, name) => {
-    if (window.confirm(`Delete division card "${name}"?`)) {
+    if (window.confirm(`Delete product "${name}"?`)) {
       try {
-        await api.delete(`/divisions/${id}`);
-        showToast('Division card deleted successfully! 🗑️');
-        fetchDivisions();
+        await api.delete(`/products/${id}`);
+        showToast('Product deleted successfully! 🗑️');
+        fetchProducts();
       } catch (error) {
-        alert('Failed to delete division card');
+        alert('Failed to delete product');
       }
     }
   };
 
-  const handleSeedDefaults = async () => {
-    if (window.confirm('Populate all 3 design cards (Derma, Evara, Elzac)?')) {
+  const handleSeedFromExcel = async () => {
+    if (window.confirm('Reset and load all 155 products extracted from the Excel spreadsheet?')) {
       try {
-        const defaultCards = [
-          {
-            name: 'Derma Division',
-            subtitle: 'Science-Backed Skin Solutions',
-            description: 'Advanced skincare and dermatological products for healthier skin and better life.',
-            imageUrl: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&auto=format&fit=crop&q=80',
-            themeColor: '#a855f7',
-            btnText: 'Explore Products',
-            btnLink: '#products',
-            sortOrder: 1,
-            status: 'Active',
-          },
-          {
-            name: 'Evara Division',
-            subtitle: 'Everyday Health & Wellness',
-            description: 'Science-backed pharmaceuticals for everyday health and wellness needs.',
-            imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800&auto=format&fit=crop&q=80',
-            themeColor: '#06b6d4',
-            btnText: 'Explore Products',
-            btnLink: '#products',
-            sortOrder: 2,
-            status: 'Active',
-          },
-          {
-            name: 'Elzac Division',
-            subtitle: 'Reliable Effective Solutions',
-            description: 'Reliable and effective pharmaceuticals for a healthier and stronger tomorrow.',
-            imageUrl: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=800&auto=format&fit=crop&q=80',
-            themeColor: '#6366f1',
-            btnText: 'Explore Products',
-            btnLink: '#products',
-            sortOrder: 3,
-            status: 'Active',
-          },
-        ];
-
-        for (const card of defaultCards) {
-          await api.post('/divisions', card);
-        }
-
-        showToast('All 3 Strategic Division cards populated! 🎉');
-        fetchDivisions();
+        setSeeding(true);
+        const res = await api.post('/products/seed');
+        showToast(`Loaded ${res.data.count || 155} products from Excel! 🎉`);
+        fetchProducts();
       } catch (error) {
-        alert('Error populating default cards: ' + error.message);
+        alert('Error seeding Excel products: ' + error.message);
+      } finally {
+        setSeeding(false);
       }
     }
   };
 
   return (
     <div>
-      {/* Floating Success Toast Notification */}
+      {/* Toast Notification */}
       {toastMessage && (
         <div
           style={{
@@ -135,138 +161,125 @@ const DivisionsPage = () => {
           <CheckCircle size={24} color="#4ade80" />
           <div>
             <div style={{ fontWeight: 800, fontSize: '0.95rem' }}>{toastMessage}</div>
-            <div style={{ fontSize: '0.8rem', color: '#cbd5e1' }}>Strategic divisions data updated cleanly.</div>
+            <div style={{ fontSize: '0.8rem', color: '#cbd5e1' }}>Product catalog updated.</div>
           </div>
         </div>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+      {/* Page Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <div style={{ fontSize: '0.85rem', color: '#c054c2', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            Home Section ➔ Section 4: Strategic Divisions
+            Products Management
           </div>
           <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0a192f', marginTop: '2px' }}>
-            Our Strategic Divisions Management
+            MPPL Products Catalog ({products.length} Items)
           </h2>
-          <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
-            Manage Section 4 division cards (Derma, Evara, Elzac), colors, images, descriptions, and product links.
-          </p>
         </div>
 
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button className="btn btn-secondary" onClick={handleSeedDefaults}>
-            <Sparkles size={16} color="#c054c2" /> Auto-Populate All 3 Cards
+          <button className="btn btn-secondary" onClick={handleSeedFromExcel} disabled={seeding} title="Reset & Re-load all 155 Excel products">
+            <RotateCcw size={16} color="#c054c2" /> {seeding ? 'Seeding...' : 'Import 155 Excel Products'}
           </button>
           <button className="btn btn-primary" onClick={() => { setEditingItem(null); setIsModalOpen(true); }}>
-            <Plus size={18} /> Add Strategic Division
+            <Plus size={18} /> Add Product
           </button>
         </div>
       </div>
 
-      {/* LIVE SECTION 4 PREVIEW CARD - Matching exact 3-column reference design from image! */}
-      <div className="card" style={{ border: '2px solid #c054c2', background: '#ffffff', borderRadius: '16px', overflow: 'hidden', marginBottom: '2rem' }}>
-        <div style={{ background: 'linear-gradient(135deg, #0e0714, #260e36)', color: 'white', padding: '10px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '0.88rem' }}>
-            <Sparkles size={16} color="#c054c2" />
-            LIVE SECTION 4 PREVIEW (Public Website Display)
-          </div>
-          <span className="badge badge-active" style={{ background: '#c054c2', color: 'white' }}>
-            Strategic Divisions Active
-          </span>
-        </div>
-
-        <div style={{ padding: '3rem 2rem', textAlign: 'center', background: '#faf5fa' }}>
-          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>
-            Our Products
-          </div>
-
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#0a192f', marginBottom: '8px' }}>
-            Our Strategic{' '}
-            <span style={{ color: '#c054c2', fontStyle: 'italic', fontFamily: 'serif', fontWeight: 700 }}>
-              divisions
-            </span>
-          </h2>
-
-          <p style={{ color: '#64748b', fontSize: '0.92rem', maxWidth: '600px', margin: '0 auto 2.5rem', lineHeight: 1.5 }}>
-            Comprehensive pharmaceutical solutions across dermatology, everyday wellness, and specialized healthcare.
-          </p>
-
-          {/* 3 Division Cards Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', textAlign: 'left' }}>
-            {items.map((item) => (
-              <div
-                key={item.id}
+      {/* Division Navigation Tabs */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '1.25rem', overflowX: 'auto', paddingBottom: '4px' }}>
+        {dynamicDivisions.map((div) => {
+          const isActive = selectedDivision === div;
+          const count = div === 'All' ? products.length : products.filter((p) => p.division === div).length;
+          return (
+            <button
+              key={div}
+              onClick={() => setSelectedDivision(div)}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '9999px',
+                border: '1px solid',
+                borderColor: isActive ? '#c054c2' : '#e2e8f0',
+                background: isActive ? 'linear-gradient(135deg, #c054c2 0%, #8d348f 100%)' : '#ffffff',
+                color: isActive ? '#ffffff' : '#475569',
+                fontWeight: 700,
+                fontSize: '0.88rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: isActive ? '0 4px 12px rgba(192, 84, 194, 0.3)' : 'none',
+              }}
+            >
+              <span>{div === 'All' ? 'All Products' : div}</span>
+              <span
                 style={{
-                  background: '#ffffff',
-                  borderRadius: '24px',
-                  overflow: 'hidden',
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
-                  border: '1px solid #e2e8f0',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  transition: 'transform 0.2s ease',
+                  background: isActive ? 'rgba(255,255,255,0.25)' : '#f1f5f9',
+                  color: isActive ? '#ffffff' : '#64748b',
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  fontSize: '0.75rem',
                 }}
               >
-                {/* Banner Top Image with Colored Overlay & Title */}
-                <div style={{ position: 'relative', height: '220px', overflow: 'hidden' }}>
-                  <img
-                    src={item.imageUrl || 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&auto=format&fit=crop&q=80'}
-                    alt={item.name}
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&auto=format&fit=crop&q=80';
-                    }}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background: item.themeColor ? `linear-gradient(180deg, ${item.themeColor}aa 0%, ${item.themeColor}dd 100%)` : 'linear-gradient(180deg, rgba(192,84,194,0.7) 0%, rgba(141,52,143,0.9) 100%)',
-                      backdropFilter: 'blur(2px)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'flex-end',
-                      padding: '1.5rem',
-                      color: 'white',
-                    }}
-                  >
-                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'serif', fontStyle: 'italic', color: 'white', marginBottom: '2px' }}>
-                      {item.name}
-                    </h3>
-                    <p style={{ fontSize: '0.8rem', opacity: 0.9, fontWeight: 500 }}>
-                      {item.subtitle}
-                    </p>
-                  </div>
-                </div>
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
-                {/* Card Content & Action Button */}
-                <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1 }}>
-                  <p style={{ color: '#475569', fontSize: '0.88rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                    {item.description}
-                  </p>
+      {/* Filters Bar: Search & Category Selector */}
+      <div className="card" style={{ padding: '1rem 1.5rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Search Box */}
+          <div style={{ flex: 1, minWidth: '240px', position: 'relative' }}>
+            <Search size={18} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search by product name, composition formula, or category..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ paddingLeft: '38px' }}
+            />
+          </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#c054c2', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer' }}>
-                    <span>{item.btnText || 'Explore Products'}</span>
-                    <ArrowRight size={16} color="#c054c2" />
-                  </div>
-                </div>
-              </div>
-            ))}
+          {/* Category Dropdown Filter */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Filter size={16} color="#c054c2" />
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569' }}>Category:</span>
+            <select
+              className="form-control"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              style={{ minWidth: '200px' }}
+            >
+              {availableCategories.map((c) => (
+                <option key={c} value={c}>
+                  {c === 'All' ? `All Categories (${availableCategories.length - 1})` : c}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
 
-      {/* MANAGED DIVISIONS TABLE */}
+      {/* MANAGED PRODUCTS TABLE */}
       <div className="card">
-        <div className="card-header">
+        <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Layers size={20} color="#c054c2" /> Strategic Divisions Management
+              <Package size={20} color="#c054c2" /> Structured Products List ({filteredProducts.length})
             </h3>
             <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '2px' }}>
-              Add, edit, re-order, or change theme colors for your Strategic Divisions cards.
+              Categories highlighted in red badge theme. Product names in bold.
             </p>
+          </div>
+
+          <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>
+            Showing {paginatedProducts.length > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0} - {Math.min(currentPage * ITEMS_PER_PAGE, filteredProducts.length)} of {filteredProducts.length}
           </div>
         </div>
 
@@ -274,56 +287,96 @@ const DivisionsPage = () => {
           <table className="custom-table">
             <thead>
               <tr>
-                <th>Banner Image</th>
-                <th>Division Name & Subtitle</th>
-                <th>Theme Accent</th>
-                <th>Description Text</th>
-                <th>Order</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+                <th style={{ width: '120px' }}>Division</th>
+                <th style={{ width: '220px' }}>Red Category</th>
+                <th style={{ width: '240px' }}>Product Name</th>
+                <th>Composition / Ingredients</th>
+                <th style={{ width: '90px' }}>Status</th>
+                <th style={{ textAlign: 'right', width: '110px' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
-                    Loading division cards...
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '3rem' }}>
+                    Loading products...
                   </td>
                 </tr>
-              ) : items.length > 0 ? (
-                items.map((item) => (
-                  <tr key={item.id}>
+              ) : paginatedProducts.length > 0 ? (
+                paginatedProducts.map((p, idx) => (
+                  <tr key={p.id || idx}>
                     <td>
-                      <img
-                        src={item.imageUrl}
-                        alt={item.name}
-                        style={{ width: '80px', height: '50px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                      />
+                      <span
+                        style={{
+                          background: p.division === 'Derma A' || p.division === 'Derma B' ? '#faf5ff' : p.division === 'Evara' ? '#ecfeff' : '#e0e7ff',
+                          color: p.division === 'Derma A' || p.division === 'Derma B' ? '#a855f7' : p.division === 'Evara' ? '#0891b2' : '#4f46e5',
+                          border: `1px solid ${p.division === 'Derma A' || p.division === 'Derma B' ? '#e9d5ff' : p.division === 'Evara' ? '#cff4fc' : '#c7d2fe'}`,
+                          padding: '4px 10px',
+                          borderRadius: '8px',
+                          fontWeight: 700,
+                          fontSize: '0.8rem',
+                          display: 'inline-block',
+                        }}
+                      >
+                        {p.division}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        style={{
+                          background: '#fef2f2',
+                          color: '#dc2626',
+                          border: '1px solid #fecaca',
+                          padding: '4px 10px',
+                          borderRadius: '8px',
+                          fontWeight: 800,
+                          fontSize: '0.78rem',
+                          letterSpacing: '0.3px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                        }}
+                      >
+                        <Tag size={12} color="#dc2626" />
+                        {p.category}
+                      </span>
                     </td>
                     <td>
                       <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.95rem' }}>
-                        {item.name}
+                        {p.name}
                       </div>
-                      <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-                        {item.subtitle}
-                      </div>
+                      {p.packing && (
+                        <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
+                          Pack: {p.packing}
+                        </div>
+                      )}
+                    </td>
+                    <td style={{ fontSize: '0.86rem', color: '#475569', lineHeight: 1.5 }}>
+                      {p.composition || <span style={{ color: '#cbd5e1' }}>—</span>}
                     </td>
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: item.themeColor, border: '1px solid #cbd5e1' }} />
-                        <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#475569' }}>{item.themeColor}</span>
-                      </div>
+                      <span className={`badge ${p.status === 'Active' ? 'badge-active' : 'badge-upcoming'}`}>
+                        {p.status || 'Active'}
+                      </span>
                     </td>
-                    <td style={{ fontSize: '0.85rem', color: '#475569', maxWidth: '340px' }}>
-                      {item.description}
-                    </td>
-                    <td style={{ fontWeight: 700 }}>#{item.sortOrder}</td>
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                        <button className="btn btn-secondary btn-sm" onClick={() => { setEditingItem(item); setIsModalOpen(true); }}>
-                          <Edit3 size={14} /> Edit
+                        <button
+                          className="btn-icon-action btn-icon-edit"
+                          onClick={() => {
+                            setEditingItem(p);
+                            setIsModalOpen(true);
+                          }}
+                          title="Edit Product"
+                        >
+                          <Edit3 size={16} />
                         </button>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(item.id, item.name)}>
-                          <Trash2 size={14} /> Delete
+                        <button
+                          className="btn-icon-action btn-icon-delete"
+                          onClick={() => handleDelete(p.id, p.name)}
+                          title="Delete Product"
+                        >
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>
@@ -331,14 +384,82 @@ const DivisionsPage = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
-                    No division cards found. Click "Add Strategic Division" to create one.
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '3rem', color: '#94a3b8' }}>
+                    No products matching filter criteria. Click "Import 155 Excel Products" or "Add Product".
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Bar */}
+        {totalPages > 1 && (
+          <div
+            style={{
+              padding: '1rem 1.5rem',
+              borderTop: '1px solid #e2e8f0',
+              display: 'flex',
+              justify: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '12px',
+            }}
+          >
+            <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
+              Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+            </div>
+
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                style={{ padding: '6px 12px', fontSize: '0.82rem', opacity: currentPage === 1 ? 0.5 : 1 }}
+              >
+                <ChevronLeft size={14} /> Previous
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 2)
+                .map((p, i, arr) => {
+                  const prevVal = arr[i - 1];
+                  const showEllipsis = prevVal && p - prevVal > 1;
+                  return (
+                    <React.Fragment key={p}>
+                      {showEllipsis && <span style={{ padding: '0 4px', color: '#94a3b8' }}>...</span>}
+                      <button
+                        onClick={() => setCurrentPage(p)}
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '8px',
+                          border: '1px solid',
+                          borderColor: currentPage === p ? '#c054c2' : '#cbd5e1',
+                          background: currentPage === p ? '#c054c2' : '#ffffff',
+                          color: currentPage === p ? '#ffffff' : '#475569',
+                          fontWeight: 700,
+                          fontSize: '0.82rem',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {p}
+                      </button>
+                    </React.Fragment>
+                  );
+                })}
+
+              <button
+                className="btn btn-secondary"
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                style={{ padding: '6px 12px', fontSize: '0.82rem', opacity: currentPage === totalPages ? 0.5 : 1 }}
+              >
+                Next <ChevronRight size={14} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <DivisionModal
@@ -346,6 +467,7 @@ const DivisionsPage = () => {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
         item={editingItem}
+        existingProducts={products}
       />
     </div>
   );

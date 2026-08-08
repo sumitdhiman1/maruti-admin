@@ -205,9 +205,6 @@ const CareersPage = () => {
           <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0a192f', marginTop: '2px' }}>
             Working at Maruti Pharma & Culture Sections
           </h2>
-          <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
-            Manage "Working at Maruti Pharma", "Learning & Development", "Performance & Recognition", and "Join Our Team" sections.
-          </p>
         </div>
 
         <div style={{ display: 'flex', gap: '10px' }}>
@@ -295,11 +292,11 @@ const CareersPage = () => {
               </button>
 
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="btn btn-secondary btn-sm" onClick={() => openEditModal(sec)}>
-                  <Edit3 size={14} /> Edit
+                <button className="btn-icon-action btn-icon-edit" onClick={() => openEditModal(sec)} title="Edit Section">
+                  <Edit3 size={16} />
                 </button>
-                <button className="btn btn-danger btn-sm" onClick={() => handleDelete(sec.id, sec.title)}>
-                  <Trash2 size={14} />
+                <button className="btn-icon-action btn-icon-delete" onClick={() => handleDelete(sec.id, sec.title)} title="Delete Section">
+                  <Trash2 size={16} />
                 </button>
               </div>
             </div>

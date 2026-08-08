@@ -277,11 +277,11 @@ const HeroSection = () => {
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                        <button className="btn btn-secondary btn-sm" onClick={() => { setEditingBanner(item); setIsModalOpen(true); }}>
-                          <Edit3 size={14} /> Edit
+                        <button className="btn-icon-action btn-icon-edit" onClick={() => { setEditingBanner(item); setIsModalOpen(true); }} title="Edit Banner">
+                          <Edit3 size={16} />
                         </button>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(item.id)}>
-                          <Trash2 size={14} /> Delete
+                        <button className="btn-icon-action btn-icon-delete" onClick={() => handleDelete(item.id)} title="Delete Banner">
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>

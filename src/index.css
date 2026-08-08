@@ -322,6 +322,48 @@ body {
   font-size: 0.8rem;
 }
 
+/* Icon Only Action Buttons */
+.btn-icon-action {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.btn-icon-edit {
+  background: #fdf4ff;
+  color: #c054c2;
+  border-color: #f5d0fe;
+}
+
+.btn-icon-edit:hover {
+  background: #c054c2;
+  color: #ffffff;
+  border-color: #c054c2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(192, 84, 194, 0.3);
+}
+
+.btn-icon-delete {
+  background: #fef2f2;
+  color: #ef4444;
+  border-color: #fecaca;
+}
+
+.btn-icon-delete:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
 /* Cards & Tables */
 .card {
   background: var(--bg-card);

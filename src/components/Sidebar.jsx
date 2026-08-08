@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Layers, Compass, Quote, Calendar, Briefcase, MessageSquare, Mail } from 'lucide-react';
+import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Layers, Compass, Quote, Calendar, Briefcase, MessageSquare, Mail, Package } from 'lucide-react';
 
-const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'divisions', 'mission-vision', 'reviews'];
+const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'mission-vision', 'reviews'];
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const isHomeSubTab = homeSubTabs.includes(activeTab);
@@ -34,6 +34,19 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           >
             <LayoutDashboard size={20} />
             <span>Dashboard</span>
+          </button>
+        </li>
+
+        {/* Products Main Menu */}
+        <li className={`menu-item ${activeTab === 'products' || activeTab === 'divisions' ? 'active' : ''}`}>
+          <button
+            onClick={() => {
+              setActiveTab('products');
+              setHomeOpen(false);
+            }}
+          >
+            <Package size={20} />
+            <span>Products</span>
           </button>
         </li>
 
@@ -82,16 +95,6 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                 </button>
               </li>
 
-              <li className={`menu-item ${activeTab === 'divisions' ? 'active' : ''}`}>
-                <button
-                  onClick={() => setActiveTab('divisions')}
-                  style={{ padding: '8px 12px', fontSize: '0.88rem' }}
-                >
-                  <Layers size={16} />
-                  <span>Strategic Divisions</span>
-                </button>
-              </li>
-
               <li className={`menu-item ${activeTab === 'mission-vision' ? 'active' : ''}`}>
                 <button
                   onClick={() => setActiveTab('mission-vision')}
@@ -125,6 +128,19 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           >
             <Calendar size={20} />
             <span>Events</span>
+          </button>
+        </li>
+
+        {/* Careers */}
+        <li className={`menu-item ${activeTab === 'careers' ? 'active' : ''}`}>
+          <button
+            onClick={() => {
+              setActiveTab('careers');
+              setHomeOpen(false);
+            }}
+          >
+            <Briefcase size={20} />
+            <span>Careers</span>
           </button>
         </li>
 

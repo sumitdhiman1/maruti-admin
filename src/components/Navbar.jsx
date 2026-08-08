@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Bell, LogOut, ChevronDown, User } from 'lucide-react';
+import { LogOut, ChevronDown, User } from 'lucide-react';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -26,22 +26,6 @@ const Navbar = () => {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        {/* Notification Bell */}
-        <div style={{ position: 'relative', cursor: 'pointer', padding: '6px' }}>
-          <Bell size={20} color="#475569" />
-          <span
-            style={{
-              position: 'absolute',
-              top: '4px',
-              right: '4px',
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: '#c054c2',
-            }}
-          />
-        </div>
-
         {/* Clickable User Profile Container */}
         <div style={{ position: 'relative' }} ref={dropdownRef}>
           <div

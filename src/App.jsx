@@ -13,10 +13,11 @@ import ReviewsPage from './pages/ReviewsPage';
 import EventsPage from './pages/EventsPage';
 import ContactMessagesPage from './pages/ContactMessagesPage';
 import NewsletterPage from './pages/NewsletterPage';
+import CareersPage from './pages/CareersPage';
 
 const VALID_TABS = [
-  'dashboard', 'hero-section', 'certifications', 'about-section',
-  'divisions', 'mission-vision', 'reviews', 'events',
+  'dashboard', 'products', 'hero-section', 'certifications', 'about-section',
+  'divisions', 'mission-vision', 'reviews', 'events', 'careers',
   'contact-messages', 'newsletter-subscribers'
 ];
 
@@ -79,10 +80,11 @@ const MainLayout = () => {
           {activeTab === 'hero-section' && <HeroSection />}
           {activeTab === 'certifications' && <Certifications />}
           {activeTab === 'about-section' && <AboutSectionPage />}
-          {activeTab === 'divisions' && <DivisionsPage />}
+          {(activeTab === 'divisions' || activeTab === 'products') && <DivisionsPage />}
           {activeTab === 'mission-vision' && <MissionVisionPage />}
           {activeTab === 'reviews' && <ReviewsPage />}
           {activeTab === 'events' && <EventsPage />}
+          {activeTab === 'careers' && <CareersPage />}
           {activeTab === 'contact-messages' && <ContactMessagesPage />}
           {activeTab === 'newsletter-subscribers' && <NewsletterPage />}
         </main>

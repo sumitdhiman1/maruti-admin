@@ -298,11 +298,11 @@ const EventsPage = () => {
                     </td>
                     <td style={{ textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                        <button className="btn btn-secondary btn-sm" onClick={() => { setEditingItem(item); setIsModalOpen(true); }}>
-                          <Edit3 size={14} /> Edit & Photos
+                        <button className="btn-icon-action btn-icon-edit" onClick={() => { setEditingItem(item); setIsModalOpen(true); }} title="Edit Event & Photos">
+                          <Edit3 size={16} />
                         </button>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(item.id, item.title)}>
-                          <Trash2 size={14} /> Delete
+                        <button className="btn-icon-action btn-icon-delete" onClick={() => handleDelete(item.id, item.title)} title="Delete Event">
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>

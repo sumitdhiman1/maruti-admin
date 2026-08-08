@@ -1,66 +1,129 @@
-import React, { useState, useEffect } from 'react';
-import { X, UploadCloud, Layers, CheckCircle, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../services/api';
+import { X, UploadCloud, CheckCircle, Package, Plus, Layers, Tag } from 'lucide-react';
 
-const PRESETS = {
-  derma: {
-    name: 'Derma Division',
-    subtitle: 'Science-Backed Skin Solutions',
-    description: 'Advanced skincare and dermatological products for healthier skin and better life.',
-    imageUrl: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&auto=format&fit=crop&q=80',
-    themeColor: '#a855f7',
-    btnText: 'Explore Products',
-    btnLink: '#products',
-    sortOrder: 1,
-    status: 'Active',
-  },
-  evara: {
-    name: 'Evara Division',
-    subtitle: 'Everyday Health & Wellness',
-    description: 'Science-backed pharmaceuticals for everyday health and wellness needs.',
-    imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800&auto=format&fit=crop&q=80',
-    themeColor: '#06b6d4',
-    btnText: 'Explore Products',
-    btnLink: '#products',
-    sortOrder: 2,
-    status: 'Active',
-  },
-  elzac: {
-    name: 'Elzac Division',
-    subtitle: 'Reliable Effective Solutions',
-    description: 'Reliable and effective pharmaceuticals for a healthier and stronger tomorrow.',
-    imageUrl: 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=800&auto=format&fit=crop&q=80',
-    themeColor: '#6366f1',
-    btnText: 'Explore Products',
-    btnLink: '#products',
-    sortOrder: 3,
-    status: 'Active',
-  },
+const DEFAULT_DIVISIONS = ['Derma A', 'Derma B', 'Evara', 'Elzac'];
+
+const emptyForm = {
+  division: 'Derma A',
+  customDivision: '',
+  isCustomDivision: false,
+  category: 'CORTICOSTEROIDS',
+  customCategory: '',
+  isCustomCategory: false,
+  name: '',
+  composition: '',
+  packing: '',
+  imageUrl: '',
+  themeColor: '#c054c2',
+  status: 'Active',
 };
 
-const DivisionModal = ({ isOpen, onClose, onSave, item = null }) => {
-  const [formData, setFormData] = useState(PRESETS.derma);
+const DivisionModal = ({ isOpen, onClose, onSave, item = null, existingProducts = [] }) => {
+  const [formData, setFormData] = useState(emptyForm);
   const [uploading, setUploading] = useState(false);
+
+  // Compute all available Divisions dynamically from database & defaults
+  const divisionOptions = useMemo(() => {
+    const dbDivisions = existingProducts.map((p) => p.division).filter(Boolean);
+    const combined = Array.from(new Set([...DEFAULT_DIVISIONS, ...dbDivisions])).sort();
+    return combined;
+  }, [existingProducts]);
+
+  // Compute all available Categories dynamically for the selected division
+  const currentDivisionName = formData.isCustomDivision
+    ? formData.customDivision
+    : formData.division;
+
+  const categoryOptions = useMemo(() => {
+    const dbCats = existingProducts
+      .filter((p) => p.division === currentDivisionName)
+      .map((p) => p.category)
+      .filter(Boolean);
+
+    const combined = Array.from(new Set(dbCats)).sort();
+    return combined.length > 0 ? combined : ['General'];
+  }, [currentDivisionName, existingProducts]);
 
   useEffect(() => {
     if (item) {
+      const isCustomDiv = !divisionOptions.includes(item.division);
+      const isCustomCat = !categoryOptions.includes(item.category);
+
       setFormData({
+        division: isCustomDiv ? '__CUSTOM_DIV__' : item.division || 'Derma A',
+        customDivision: isCustomDiv ? item.division : '',
+        isCustomDivision: isCustomDiv,
+        category: isCustomCat ? '__CUSTOM_CAT__' : item.category || 'General',
+        customCategory: isCustomCat ? item.category : '',
+        isCustomCategory: isCustomCat,
         name: item.name || '',
-        subtitle: item.subtitle || '',
-        description: item.description || '',
+        composition: item.composition || '',
+        packing: item.packing || '',
         imageUrl: item.imageUrl || '',
         themeColor: item.themeColor || '#c054c2',
-        btnText: item.btnText || 'Explore Products',
-        btnLink: item.btnLink || '#products',
-        sortOrder: item.sortOrder || 1,
         status: item.status || 'Active',
       });
     } else {
-      setFormData(PRESETS.derma);
+      setFormData({
+        ...emptyForm,
+        division: divisionOptions[0] || 'Derma A',
+        category: categoryOptions[0] || 'General',
+      });
     }
   }, [item, isOpen]);
 
   if (!isOpen) return null;
+
+  const handleDivisionSelect = (e) => {
+    const val = e.target.value;
+    if (val === '__CUSTOM_DIV__') {
+      setFormData((prev) => ({
+        ...prev,
+        division: '__CUSTOM_DIV__',
+        isCustomDivision: true,
+        customDivision: '',
+        category: '__CUSTOM_CAT__',
+        isCustomCategory: true,
+        customCategory: '',
+      }));
+    } else {
+      const dbCats = existingProducts
+        .filter((p) => p.division === val)
+        .map((p) => p.category)
+        .filter(Boolean);
+      const cats = Array.from(new Set(dbCats)).sort();
+
+      setFormData((prev) => ({
+        ...prev,
+        division: val,
+        isCustomDivision: false,
+        customDivision: '',
+        category: cats[0] || 'General',
+        isCustomCategory: false,
+        customCategory: '',
+      }));
+    }
+  };
+
+  const handleCategorySelect = (e) => {
+    const val = e.target.value;
+    if (val === '__CUSTOM_CAT__') {
+      setFormData((prev) => ({
+        ...prev,
+        category: '__CUSTOM_CAT__',
+        isCustomCategory: true,
+        customCategory: '',
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        category: val,
+        isCustomCategory: false,
+        customCategory: '',
+      }));
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,12 +131,6 @@ const DivisionModal = ({ isOpen, onClose, onSave, item = null }) => {
       ...prev,
       [name]: value,
     }));
-  };
-
-  const applyPreset = (key) => {
-    if (PRESETS[key]) {
-      setFormData(PRESETS[key]);
-    }
   };
 
   const handleFileUpload = async (e) => {
@@ -98,7 +155,7 @@ const DivisionModal = ({ isOpen, onClose, onSave, item = null }) => {
         return;
       }
     } catch (err) {
-      console.warn('Backend upload note, using file preview:', err.message);
+      console.warn('Backend upload note:', err.message);
     }
 
     const reader = new FileReader();
@@ -114,11 +171,35 @@ const DivisionModal = ({ isOpen, onClose, onSave, item = null }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.imageUrl) {
-      alert('Please upload a division image file first.');
+
+    const finalDivision = formData.isCustomDivision
+      ? formData.customDivision.trim()
+      : formData.division;
+
+    const finalCategory = formData.isCustomCategory
+      ? formData.customCategory.trim().toUpperCase()
+      : formData.category;
+
+    if (!finalDivision) {
+      alert('Please select or enter a Division name.');
       return;
     }
-    onSave(formData);
+
+    if (!finalCategory) {
+      alert('Please select or enter a Category name.');
+      return;
+    }
+
+    if (!formData.name.trim()) {
+      alert('Please enter a Product name.');
+      return;
+    }
+
+    onSave({
+      ...formData,
+      division: finalDivision,
+      category: finalCategory,
+    });
   };
 
   return (
@@ -126,8 +207,8 @@ const DivisionModal = ({ isOpen, onClose, onSave, item = null }) => {
       <div className="modal-content" style={{ maxWidth: '640px' }}>
         <div className="modal-header">
           <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Layers size={20} color="#ffc107" />
-            {item ? 'Edit Strategic Division Card' : 'Add Strategic Division Card'}
+            <Package size={20} color="#c054c2" />
+            {item ? 'Edit Product' : 'Add New Product'}
           </h3>
           <button className="modal-close" onClick={onClose}>
             <X size={20} />
@@ -135,49 +216,144 @@ const DivisionModal = ({ isOpen, onClose, onSave, item = null }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="modal-body">
-          {/* Quick Fill Presets */}
-          {!item && (
-            <div className="form-group" style={{ background: '#faf5fa', padding: '10px 14px', borderRadius: '10px', border: '1px solid #f3d4f5' }}>
-              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', marginBottom: '8px' }}>
-                <Sparkles size={14} color="#c054c2" /> Quick Auto-Fill Preset Contents:
+          {/* Division Select */}
+          <div className="form-row">
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Division / Product Line *</label>
+              <select
+                className="form-control"
+                value={formData.isCustomDivision ? '__CUSTOM_DIV__' : formData.division}
+                onChange={handleDivisionSelect}
+                required
+              >
+                {divisionOptions.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+                <option value="__CUSTOM_DIV__">+ Create New Division...</option>
+              </select>
+            </div>
+
+            {/* Category Select */}
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Category *</label>
+              <select
+                className="form-control"
+                value={formData.isCustomCategory ? '__CUSTOM_CAT__' : formData.category}
+                onChange={handleCategorySelect}
+                required
+              >
+                {categoryOptions.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+                <option value="__CUSTOM_CAT__">+ Create New Category...</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Inputs for Custom Division or Category */}
+          {formData.isCustomDivision && (
+            <div className="form-group" style={{ background: '#faf5ff', padding: '10px 14px', borderRadius: '10px', border: '1px solid #e9d5ff' }}>
+              <label className="form-label" style={{ color: '#a855f7', fontWeight: 700 }}>
+                New Division Name *
               </label>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  style={{ background: '#ffffff', border: '1px solid #a855f7', color: '#a855f7', fontWeight: 700 }}
-                  onClick={() => applyPreset('derma')}
-                >
-                  Fill Derma Division
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  style={{ background: '#ffffff', border: '1px solid #06b6d4', color: '#06b6d4', fontWeight: 700 }}
-                  onClick={() => applyPreset('evara')}
-                >
-                  Fill Evara Division
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-sm"
-                  style={{ background: '#ffffff', border: '1px solid #6366f1', color: '#6366f1', fontWeight: 700 }}
-                  onClick={() => applyPreset('elzac')}
-                >
-                  Fill Elzac Division
-                </button>
-              </div>
+              <input
+                type="text"
+                name="customDivision"
+                className="form-control"
+                placeholder="e.g. Derma C, Cardiology, Pediatrics"
+                value={formData.customDivision}
+                onChange={handleChange}
+                required
+                autoFocus
+              />
             </div>
           )}
 
-          {/* Card Banner Image Upload */}
+          {formData.isCustomCategory && (
+            <div className="form-group" style={{ background: '#fef2f2', padding: '10px 14px', borderRadius: '10px', border: '1px solid #fecaca' }}>
+              <label className="form-label" style={{ color: '#dc2626', fontWeight: 700 }}>
+                New Category Name *
+              </label>
+              <input
+                type="text"
+                name="customCategory"
+                className="form-control"
+                placeholder="e.g. CORTICOSTEROIDS, VACCINES, SYRUPS"
+                value={formData.customCategory}
+                onChange={handleChange}
+                required
+                autoFocus={!formData.isCustomDivision}
+              />
+            </div>
+          )}
+
+          {/* Product Name */}
           <div className="form-group">
-            <label className="form-label">Division Card Banner Image (Cloudinary Media Upload)</label>
+            <label className="form-label">Product Name (Bold Header) *</label>
+            <input
+              type="text"
+              name="name"
+              className="form-control"
+              placeholder="e.g. HALOBET CREAM, PYRONIL TABLET"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Composition Formula */}
+          <div className="form-group">
+            <label className="form-label">Composition / Formula / Ingredients</label>
+            <textarea
+              name="composition"
+              className="form-control"
+              rows={3}
+              placeholder="e.g. HALOBETASOL PROPIONATE USP 0.05%w/w 15/30g"
+              value={formData.composition}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Packing & Display Status */}
+          <div className="form-row">
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Packing / Unit Size (Optional)</label>
+              <input
+                type="text"
+                name="packing"
+                className="form-control"
+                placeholder="e.g. 10x10 Tablets, 15g Tube"
+                value={formData.packing}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="form-group" style={{ flex: 1 }}>
+              <label className="form-label">Display Status</label>
+              <select
+                name="status"
+                className="form-control"
+                value={formData.status}
+                onChange={handleChange}
+              >
+                <option value="Active">Active (Visible)</option>
+                <option value="Hidden">Hidden</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Product Image (Optional) */}
+          <div className="form-group">
+            <label className="form-label">Product Image / Banner (Optional)</label>
             <div
               style={{
                 border: '2px dashed #c054c2',
                 borderRadius: '12px',
-                padding: '1.25rem',
+                padding: '1rem',
                 textAlign: 'center',
                 background: '#faf5fa',
                 cursor: 'pointer',
@@ -188,30 +364,26 @@ const DivisionModal = ({ isOpen, onClose, onSave, item = null }) => {
                 <div>
                   <img
                     src={formData.imageUrl}
-                    alt="Division Preview"
+                    alt="Product Preview"
                     style={{
-                      maxHeight: '140px',
+                      maxHeight: '120px',
                       maxWidth: '100%',
                       objectFit: 'cover',
-                      borderRadius: '12px',
-                      marginBottom: '8px',
+                      borderRadius: '8px',
+                      marginBottom: '6px',
                       border: '2px solid #c054c2',
                     }}
                   />
-                  <div style={{ fontSize: '0.85rem', color: '#15803d', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                    <CheckCircle size={16} /> Division Banner Image Ready
+                  <div style={{ fontSize: '0.82rem', color: '#15803d', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                    <CheckCircle size={16} /> Image Selected
                   </div>
-                  <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Click to select a different banner image file</span>
                 </div>
               ) : (
                 <div>
-                  <UploadCloud size={38} color="#c054c2" style={{ marginBottom: '6px' }} />
-                  <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a' }}>
-                    {uploading ? 'Uploading Image to Cloudinary...' : 'Click to Upload Division Image File'}
+                  <UploadCloud size={32} color="#c054c2" style={{ marginBottom: '4px' }} />
+                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>
+                    {uploading ? 'Uploading Image...' : 'Click to Upload Product Image (Optional)'}
                   </div>
-                  <p style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '4px' }}>
-                    Supports PNG, JPG, WEBP formats
-                  </p>
                 </div>
               )}
 
@@ -221,123 +393,22 @@ const DivisionModal = ({ isOpen, onClose, onSave, item = null }) => {
                 onChange={handleFileUpload}
                 style={{
                   position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
+                  inset: 0,
                   opacity: 0,
                   cursor: 'pointer',
+                  width: '100%',
+                  height: '100%',
                 }}
               />
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">Division Name</label>
-              <input
-                type="text"
-                name="name"
-                required
-                className="form-control"
-                placeholder="e.g. Derma Division, Evara Division"
-                value={formData.name}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Subtitle Overlay Text</label>
-              <input
-                type="text"
-                name="subtitle"
-                className="form-control"
-                placeholder="e.g. Science-Backed Skin Solutions"
-                value={formData.subtitle}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Card Body Description</label>
-            <textarea
-              name="description"
-              rows="3"
-              required
-              className="form-control"
-              placeholder="e.g. Advanced skincare and dermatological products for healthier skin..."
-              value={formData.description}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">Theme Color Accent</label>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <input
-                  type="color"
-                  name="themeColor"
-                  value={formData.themeColor}
-                  onChange={handleChange}
-                  style={{ width: '40px', height: '40px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
-                />
-                <input
-                  type="text"
-                  name="themeColor"
-                  className="form-control"
-                  placeholder="#a855f7"
-                  value={formData.themeColor}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Sort Order</label>
-              <input
-                type="number"
-                name="sortOrder"
-                className="form-control"
-                value={formData.sortOrder}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label className="form-label">Link Button Text</label>
-              <input
-                type="text"
-                name="btnText"
-                className="form-control"
-                placeholder="Explore Products"
-                value={formData.btnText}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Link Destination URL</label>
-              <input
-                type="text"
-                name="btnLink"
-                className="form-control"
-                placeholder="#products"
-                value={formData.btnLink}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '1.5rem' }}>
+          <div className="modal-footer" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
             <button type="button" className="btn btn-secondary" onClick={onClose}>
               Cancel
             </button>
             <button type="submit" className="btn btn-primary">
-              Save Division Card
+              {item ? 'Save Changes' : 'Create Product'}
             </button>
           </div>
         </form>
