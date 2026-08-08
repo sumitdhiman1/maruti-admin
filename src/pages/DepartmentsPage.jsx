@@ -1,7 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import DepartmentModal from '../components/DepartmentModal';
-import { Building2, Plus, Edit3, Trash2, RotateCcw, CheckCircle, Search, ShieldCheck, Award, Factory, TrendingUp, Layers, Wrench } from 'lucide-react';
+import { getImageUrl, handleImageError } from '../utils/imageHelper';
+import {
+  Building2,
+  Plus,
+  Edit3,
+  Trash2,
+  RotateCcw,
+  CheckCircle,
+  Search,
+  ShieldCheck,
+  Award,
+  Factory,
+  TrendingUp,
+  Layers,
+  Wrench,
+  GripVertical,
+} from 'lucide-react';
 
 const iconMap = {
   TrendingUp: TrendingUp,
@@ -21,6 +37,9 @@ const DepartmentsPage = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
   const [seeding, setSeeding] = useState(false);
+
+  // Drag & Drop State
+  const [draggedItemIndex, setDraggedItemIndex] = useState(null);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -49,7 +68,8 @@ const DepartmentsPage = () => {
         await api.put(`/departments/${editingItem.id}`, formData);
         showToast('Department updated successfully! 🎉');
       } else {
-        await api.post('/departments', formData);
+        const nextOrder = departments.length > 0 ? Math.max(...departments.map((d) => d.sortOrder || 1)) + 1 : 1;
+        await api.post('/departments', { ...formData, sortOrder: nextOrder });
         showToast('New Department added successfully! 🎉');
       }
       setIsModalOpen(false);
@@ -84,6 +104,50 @@ const DepartmentsPage = () => {
       } finally {
         setSeeding(false);
       }
+    }
+  };
+
+  // Drag and Drop Event Handlers
+  const handleDragStart = (e, index) => {
+    setDraggedItemIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = async (e, dropTargetIndex) => {
+    e.preventDefault();
+    if (draggedItemIndex === null || draggedItemIndex === dropTargetIndex) {
+      setDraggedItemIndex(null);
+      return;
+    }
+
+    const updatedList = [...departments];
+    const [movedItem] = updatedList.splice(draggedItemIndex, 1);
+    updatedList.splice(dropTargetIndex, 0, movedItem);
+
+    // Reassign sortOrder sequentially
+    const reorderedList = updatedList.map((item, idx) => ({
+      ...item,
+      sortOrder: idx + 1,
+    }));
+
+    setDepartments(reorderedList);
+    setDraggedItemIndex(null);
+
+    // Persist new order to backend database
+    try {
+      for (let i = 0; i < reorderedList.length; i++) {
+        await api.put(`/departments/${reorderedList[i].id}`, {
+          sortOrder: reorderedList[i].sortOrder,
+        });
+      }
+      showToast('Departments re-ordered successfully via Drag & Drop! 🎯');
+    } catch (err) {
+      console.error('Failed to persist drag-and-drop order:', err);
     }
   };
 
@@ -158,19 +222,23 @@ const DepartmentsPage = () => {
         </div>
       </div>
 
-      {/* DEPARTMENTS TABLE */}
+      {/* DEPARTMENTS TABLE WITH DRAG & DROP SORTING */}
       <div className="card">
-        <div className="card-header">
+        <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Building2 size={20} color="#c054c2" /> Dynamic Departments Overview
+            <Building2 size={20} color="#c054c2" /> Dynamic Departments Listing
           </h3>
+          <div style={{ fontSize: '0.82rem', color: '#c054c2', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <GripVertical size={16} /> Drag & Drop any row to re-order departments for the public site
+          </div>
         </div>
 
         <div className="table-responsive">
           <table className="custom-table">
             <thead>
               <tr>
-                <th style={{ width: '60px' }}>Order</th>
+                <th style={{ width: '80px' }}>Drag</th>
+                <th style={{ width: '100px' }}>Banner</th>
                 <th style={{ width: '240px' }}>Department</th>
                 <th>Overview & Core Scope</th>
                 <th style={{ width: '90px' }}>Status</th>
@@ -180,17 +248,44 @@ const DepartmentsPage = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '3rem' }}>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '3rem' }}>
                     Loading departments...
                   </td>
                 </tr>
               ) : filteredDepartments.length > 0 ? (
-                filteredDepartments.map((d) => {
+                filteredDepartments.map((d, index) => {
                   const IconComp = iconMap[d.icon] || Building2;
+                  const isBeingDragged = draggedItemIndex === index;
+
                   return (
-                    <tr key={d.id}>
+                    <tr
+                      key={d.id}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDrop={(e) => handleDrop(e, index)}
+                      style={{
+                        cursor: 'grab',
+                        background: isBeingDragged ? '#faf5ff' : 'transparent',
+                        opacity: isBeingDragged ? 0.5 : 1,
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
                       <td>
-                        <span style={{ fontWeight: 700, color: '#64748b' }}>#{d.sortOrder}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'grab' }}>
+                          <GripVertical size={18} color="#c054c2" />
+                          <span style={{ fontWeight: 700, color: '#64748b', fontSize: '0.85rem' }}>
+                            #{index + 1}
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <img
+                          src={getImageUrl(d.imageUrl)}
+                          alt={d.name}
+                          style={{ width: '64px', height: '42px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#f8fafc' }}
+                          onError={(e) => handleImageError(e)}
+                        />
                       </td>
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -239,7 +334,7 @@ const DepartmentsPage = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '3rem', color: '#94a3b8' }}>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '3rem', color: '#94a3b8' }}>
                     No departments found. Click "Import 6 Docx Departments" to load.
                   </td>
                 </tr>

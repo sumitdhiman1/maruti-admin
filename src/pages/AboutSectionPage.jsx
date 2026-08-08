@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import { getImageUrl, handleImageError } from '../utils/imageHelper';
 import { Sparkles, UploadCloud, CheckCircle, Save, Pill, Lightbulb, Building2 } from 'lucide-react';
 
 const AboutSectionPage = () => {
@@ -275,7 +276,7 @@ const AboutSectionPage = () => {
               {formData.imageUrl ? (
                 <div>
                   <img
-                    src={formData.imageUrl}
+                    src={getImageUrl(formData.imageUrl)}
                     alt="Section 3 Main Image Preview"
                     style={{
                       maxHeight: '160px',
@@ -285,6 +286,7 @@ const AboutSectionPage = () => {
                       marginBottom: '8px',
                       border: '2px solid #c054c2',
                     }}
+                    onError={(e) => handleImageError(e)}
                   />
                   <div style={{ fontSize: '0.85rem', color: '#15803d', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                     <CheckCircle size={16} /> Image File Active

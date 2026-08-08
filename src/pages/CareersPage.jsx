@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
+import { getImageUrl, handleImageError } from '../utils/imageHelper';
 import {
   Layers, Plus, Edit3, Trash2, CheckCircle, ToggleLeft, ToggleRight,
   UploadCloud, RotateCcw, Users, GraduationCap, Award, Send, Heart, Target, Star, Briefcase
@@ -15,6 +16,8 @@ const ICON_OPTIONS = [
   { value: 'target', label: 'Target (Goals)', icon: Target },
   { value: 'star', label: 'Star (Excellence)', icon: Star },
 ];
+
+const DUMMY_IMAGE = '/assets/images/working-at-maruti.jpg';
 
 const emptySectionForm = {
   title: '',
@@ -266,11 +269,14 @@ const CareersPage = () => {
               </div>
             </div>
 
-            {sec.imageUrl && (
-              <div style={{ height: '150px', borderRadius: '12px', overflow: 'hidden', background: '#f1f5f9' }}>
-                <img src={sec.imageUrl} alt={sec.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-            )}
+            <div style={{ height: '150px', borderRadius: '12px', overflow: 'hidden', background: '#f1f5f9' }}>
+              <img
+                src={getImageUrl(sec.imageUrl)}
+                alt={sec.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => handleImageError(e)}
+              />
+            </div>
 
             <p style={{ fontSize: '0.86rem', color: '#475569', lineHeight: 1.6, flexGrow: 1, margin: 0 }}>
               {sec.description}
@@ -371,7 +377,12 @@ const CareersPage = () => {
 
                   {form.imageUrl && (
                     <div style={{ width: '100px', height: '70px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #cbd5e1', flexShrink: 0 }}>
-                      <img src={form.imageUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img
+                        src={getImageUrl(form.imageUrl)}
+                        alt="Preview"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={(e) => handleImageError(e)}
+                      />
                     </div>
                   )}
                 </div>
