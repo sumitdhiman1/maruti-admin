@@ -91,7 +91,11 @@ const AboutSectionPage = () => {
     try {
       const res = await api.get('/about-section');
       if (res.data) {
-        setFormData(prev => ({ ...prev, ...res.data }));
+        const cleanedData = {};
+        Object.keys(res.data).forEach(key => {
+          cleanedData[key] = (res.data[key] === null || res.data[key] === undefined) ? '' : res.data[key];
+        });
+        setFormData(prev => ({ ...prev, ...cleanedData }));
       }
     } catch (err) {
       console.error('Error fetching About Section data:', err);
@@ -100,7 +104,7 @@ const AboutSectionPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value || '' }));
   };
 
   const handleSubmit = async (e) => {
@@ -108,7 +112,13 @@ const AboutSectionPage = () => {
     try {
       setSaving(true);
       const res = await api.put('/about-section', formData);
-      setFormData(prev => ({ ...prev, ...res.data }));
+      if (res.data) {
+        const cleanedData = {};
+        Object.keys(res.data).forEach(key => {
+          cleanedData[key] = (res.data[key] === null || res.data[key] === undefined) ? '' : res.data[key];
+        });
+        setFormData(prev => ({ ...prev, ...cleanedData }));
+      }
       showToast('About Us Page updated successfully! 🎉');
     } catch (err) {
       alert('Failed to save changes: ' + (err.response?.data?.message || err.message));
@@ -164,49 +174,49 @@ const AboutSectionPage = () => {
 
           <div className="form-group">
             <label className="form-label">Main Banner Title</label>
-            <input className="form-control" name="bannerTitle" value={formData.bannerTitle} onChange={handleChange} />
+            <input className="form-control" name="bannerTitle" value={formData.bannerTitle || ''} onChange={handleChange} />
           </div>
 
           <div className="form-group">
             <label className="form-label">Banner Description</label>
-            <textarea className="form-control" rows={2} name="bannerDesc" value={formData.bannerDesc} onChange={handleChange} />
+            <textarea className="form-control" rows={2} name="bannerDesc" value={formData.bannerDesc || ''} onChange={handleChange} />
           </div>
 
           {/* Common Department-Style Drag & Drop Image Uploader */}
           <ImageUploadField
             label="Banner Background Image (Drag & Drop or Click)"
-            value={formData.bannerImage}
-            onChange={(url) => setFormData(prev => ({ ...prev, bannerImage: url }))}
+            value={formData.bannerImage || ''}
+            onChange={(url) => setFormData(prev => ({ ...prev, bannerImage: url || '' }))}
             placeholder="Drag & Drop Banner Image Here or click to browse"
           />
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginTop: '1rem', background: '#f8fafc', padding: '1rem', borderRadius: '12px' }}>
             <div>
               <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>Stat 1 Number</label>
-              <input className="form-control" name="stat1Number" value={formData.stat1Number} onChange={handleChange} />
+              <input className="form-control" name="stat1Number" value={formData.stat1Number || ''} onChange={handleChange} />
               <label style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>Stat 1 Label</label>
-              <input className="form-control" name="stat1Label" value={formData.stat1Label} onChange={handleChange} />
+              <input className="form-control" name="stat1Label" value={formData.stat1Label || ''} onChange={handleChange} />
             </div>
 
             <div>
               <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>Stat 2 Number</label>
-              <input className="form-control" name="stat2Number" value={formData.stat2Number} onChange={handleChange} />
+              <input className="form-control" name="stat2Number" value={formData.stat2Number || ''} onChange={handleChange} />
               <label style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>Stat 2 Label</label>
-              <input className="form-control" name="stat2Label" value={formData.stat2Label} onChange={handleChange} />
+              <input className="form-control" name="stat2Label" value={formData.stat2Label || ''} onChange={handleChange} />
             </div>
 
             <div>
               <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>Stat 3 Number</label>
-              <input className="form-control" name="stat3Number" value={formData.stat3Number} onChange={handleChange} />
+              <input className="form-control" name="stat3Number" value={formData.stat3Number || ''} onChange={handleChange} />
               <label style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>Stat 3 Label</label>
-              <input className="form-control" name="stat3Label" value={formData.stat3Label} onChange={handleChange} />
+              <input className="form-control" name="stat3Label" value={formData.stat3Label || ''} onChange={handleChange} />
             </div>
 
             <div>
               <label style={{ fontSize: '0.8rem', fontWeight: 700 }}>Stat 4 Number</label>
-              <input className="form-control" name="stat4Number" value={formData.stat4Number} onChange={handleChange} />
+              <input className="form-control" name="stat4Number" value={formData.stat4Number || ''} onChange={handleChange} />
               <label style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>Stat 4 Label</label>
-              <input className="form-control" name="stat4Label" value={formData.stat4Label} onChange={handleChange} />
+              <input className="form-control" name="stat4Label" value={formData.stat4Label || ''} onChange={handleChange} />
             </div>
           </div>
         </div>
@@ -222,30 +232,30 @@ const AboutSectionPage = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div className="form-group">
               <label className="form-label">Subhead</label>
-              <input className="form-control" name="storySubhead" value={formData.storySubhead} onChange={handleChange} />
+              <input className="form-control" name="storySubhead" value={formData.storySubhead || ''} onChange={handleChange} />
             </div>
 
             <div className="form-group">
               <label className="form-label">Story Section Title</label>
-              <input className="form-control" name="storyTitle" value={formData.storyTitle} onChange={handleChange} />
+              <input className="form-control" name="storyTitle" value={formData.storyTitle || ''} onChange={handleChange} />
             </div>
           </div>
 
           <div className="form-group">
             <label className="form-label">Story Paragraph 1</label>
-            <textarea className="form-control" rows={3} name="storyDesc1" value={formData.storyDesc1} onChange={handleChange} />
+            <textarea className="form-control" rows={3} name="storyDesc1" value={formData.storyDesc1 || ''} onChange={handleChange} />
           </div>
 
           <div className="form-group">
             <label className="form-label">Story Paragraph 2</label>
-            <textarea className="form-control" rows={3} name="storyDesc2" value={formData.storyDesc2} onChange={handleChange} />
+            <textarea className="form-control" rows={3} name="storyDesc2" value={formData.storyDesc2 || ''} onChange={handleChange} />
           </div>
 
           {/* Common Department-Style Drag & Drop Image Uploader */}
           <ImageUploadField
             label="Story Image (Drag & Drop or Click)"
-            value={formData.storyImage}
-            onChange={(url) => setFormData(prev => ({ ...prev, storyImage: url }))}
+            value={formData.storyImage || ''}
+            onChange={(url) => setFormData(prev => ({ ...prev, storyImage: url || '' }))}
             placeholder="Drag & Drop Story Image Here or click to browse"
           />
 
@@ -253,10 +263,10 @@ const AboutSectionPage = () => {
           <div style={{ marginTop: '1rem', background: '#faf5ff', padding: '1rem', borderRadius: '12px', border: '1px solid #e9d5ff' }}>
             <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0f172a', marginBottom: '8px' }}>Key Feature Bullet Points</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              <input className="form-control" name="feature1Text" value={formData.feature1Text} onChange={handleChange} placeholder="Feature 1" />
-              <input className="form-control" name="feature2Text" value={formData.feature2Text} onChange={handleChange} placeholder="Feature 2" />
-              <input className="form-control" name="feature3Text" value={formData.feature3Text} onChange={handleChange} placeholder="Feature 3" />
-              <input className="form-control" name="feature4Text" value={formData.feature4Text} onChange={handleChange} placeholder="Feature 4" />
+              <input className="form-control" name="feature1Text" value={formData.feature1Text || ''} onChange={handleChange} placeholder="Feature 1" />
+              <input className="form-control" name="feature2Text" value={formData.feature2Text || ''} onChange={handleChange} placeholder="Feature 2" />
+              <input className="form-control" name="feature3Text" value={formData.feature3Text || ''} onChange={handleChange} placeholder="Feature 3" />
+              <input className="form-control" name="feature4Text" value={formData.feature4Text || ''} onChange={handleChange} placeholder="Feature 4" />
             </div>
           </div>
         </div>
@@ -272,30 +282,30 @@ const AboutSectionPage = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px' }}>
               <label style={{ fontWeight: 700 }}>Card 1 Title</label>
-              <input className="form-control" name="behavior1Title" value={formData.behavior1Title} onChange={handleChange} style={{ marginBottom: '8px' }} />
+              <input className="form-control" name="behavior1Title" value={formData.behavior1Title || ''} onChange={handleChange} style={{ marginBottom: '8px' }} />
               <label style={{ fontSize: '0.8rem', color: '#64748b' }}>Card 1 Description</label>
-              <textarea className="form-control" rows={2} name="behavior1Desc" value={formData.behavior1Desc} onChange={handleChange} />
+              <textarea className="form-control" rows={2} name="behavior1Desc" value={formData.behavior1Desc || ''} onChange={handleChange} />
             </div>
 
             <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px' }}>
               <label style={{ fontWeight: 700 }}>Card 2 Title</label>
-              <input className="form-control" name="behavior2Title" value={formData.behavior2Title} onChange={handleChange} style={{ marginBottom: '8px' }} />
+              <input className="form-control" name="behavior2Title" value={formData.behavior2Title || ''} onChange={handleChange} style={{ marginBottom: '8px' }} />
               <label style={{ fontSize: '0.8rem', color: '#64748b' }}>Card 2 Description</label>
-              <textarea className="form-control" rows={2} name="behavior2Desc" value={formData.behavior2Desc} onChange={handleChange} />
+              <textarea className="form-control" rows={2} name="behavior2Desc" value={formData.behavior2Desc || ''} onChange={handleChange} />
             </div>
 
             <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px' }}>
               <label style={{ fontWeight: 700 }}>Card 3 Title</label>
-              <input className="form-control" name="behavior3Title" value={formData.behavior3Title} onChange={handleChange} style={{ marginBottom: '8px' }} />
+              <input className="form-control" name="behavior3Title" value={formData.behavior3Title || ''} onChange={handleChange} style={{ marginBottom: '8px' }} />
               <label style={{ fontSize: '0.8rem', color: '#64748b' }}>Card 3 Description</label>
-              <textarea className="form-control" rows={2} name="behavior3Desc" value={formData.behavior3Desc} onChange={handleChange} />
+              <textarea className="form-control" rows={2} name="behavior3Desc" value={formData.behavior3Desc || ''} onChange={handleChange} />
             </div>
 
             <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px' }}>
               <label style={{ fontWeight: 700 }}>Card 4 Title</label>
-              <input className="form-control" name="behavior4Title" value={formData.behavior4Title} onChange={handleChange} style={{ marginBottom: '8px' }} />
+              <input className="form-control" name="behavior4Title" value={formData.behavior4Title || ''} onChange={handleChange} style={{ marginBottom: '8px' }} />
               <label style={{ fontSize: '0.8rem', color: '#64748b' }}>Card 4 Description</label>
-              <textarea className="form-control" rows={2} name="behavior4Desc" value={formData.behavior4Desc} onChange={handleChange} />
+              <textarea className="form-control" rows={2} name="behavior4Desc" value={formData.behavior4Desc || ''} onChange={handleChange} />
             </div>
           </div>
         </div>
@@ -310,7 +320,7 @@ const AboutSectionPage = () => {
 
           <div className="form-group">
             <label className="form-label">Department Section Header Intro Description</label>
-            <textarea className="form-control" rows={2} name="deptIntro" value={formData.deptIntro} onChange={handleChange} />
+            <textarea className="form-control" rows={2} name="deptIntro" value={formData.deptIntro || ''} onChange={handleChange} />
           </div>
 
           {/* Grid of 4 Cards */}
@@ -321,19 +331,19 @@ const AboutSectionPage = () => {
               <div style={{ fontWeight: 800, color: '#c054c2', marginBottom: '8px', fontSize: '0.95rem' }}>1. Marketing Card</div>
               <div className="form-group">
                 <label className="form-label">Subtitle</label>
-                <input className="form-control" name="mktSubtitle" value={formData.mktSubtitle} onChange={handleChange} />
+                <input className="form-control" name="mktSubtitle" value={formData.mktSubtitle || ''} onChange={handleChange} />
               </div>
               <div className="form-group">
                 <label className="form-label">Description</label>
-                <textarea className="form-control" rows={2} name="mktDesc" value={formData.mktDesc} onChange={handleChange} />
+                <textarea className="form-control" rows={2} name="mktDesc" value={formData.mktDesc || ''} onChange={handleChange} />
               </div>
               <div className="form-group">
                 <label className="form-label">Bullet Points (1 per line)</label>
-                <textarea className="form-control" rows={4} name="mktPoints" value={formData.mktPoints} onChange={handleChange} placeholder="Enter bullet points, one per line..." />
+                <textarea className="form-control" rows={4} name="mktPoints" value={formData.mktPoints || ''} onChange={handleChange} placeholder="Enter bullet points, one per line..." />
               </div>
               <div className="form-group">
                 <label className="form-label">Footer Italic Text</label>
-                <input className="form-control" name="mktFooter" value={formData.mktFooter} onChange={handleChange} />
+                <input className="form-control" name="mktFooter" value={formData.mktFooter || ''} onChange={handleChange} />
               </div>
             </div>
 
@@ -342,15 +352,15 @@ const AboutSectionPage = () => {
               <div style={{ fontWeight: 800, color: '#c054c2', marginBottom: '8px', fontSize: '0.95rem' }}>2. Sales Card</div>
               <div className="form-group">
                 <label className="form-label">Subtitle</label>
-                <input className="form-control" name="salesSubtitle" value={formData.salesSubtitle} onChange={handleChange} />
+                <input className="form-control" name="salesSubtitle" value={formData.salesSubtitle || ''} onChange={handleChange} />
               </div>
               <div className="form-group">
                 <label className="form-label">Description</label>
-                <textarea className="form-control" rows={2} name="salesDesc" value={formData.salesDesc} onChange={handleChange} />
+                <textarea className="form-control" rows={2} name="salesDesc" value={formData.salesDesc || ''} onChange={handleChange} />
               </div>
               <div className="form-group">
                 <label className="form-label">Bullet Points (1 per line)</label>
-                <textarea className="form-control" rows={4} name="salesPoints" value={formData.salesPoints} onChange={handleChange} placeholder="Enter bullet points, one per line..." />
+                <textarea className="form-control" rows={4} name="salesPoints" value={formData.salesPoints || ''} onChange={handleChange} placeholder="Enter bullet points, one per line..." />
               </div>
             </div>
 
@@ -359,19 +369,19 @@ const AboutSectionPage = () => {
               <div style={{ fontWeight: 800, color: '#c054c2', marginBottom: '8px', fontSize: '0.95rem' }}>3. Our Approach Card</div>
               <div className="form-group">
                 <label className="form-label">Subtitle</label>
-                <input className="form-control" name="approachSubtitle" value={formData.approachSubtitle} onChange={handleChange} />
+                <input className="form-control" name="approachSubtitle" value={formData.approachSubtitle || ''} onChange={handleChange} />
               </div>
               <div className="form-group">
                 <label className="form-label">Paragraph 1</label>
-                <textarea className="form-control" rows={2} name="approachDesc1" value={formData.approachDesc1} onChange={handleChange} />
+                <textarea className="form-control" rows={2} name="approachDesc1" value={formData.approachDesc1 || ''} onChange={handleChange} />
               </div>
               <div className="form-group">
                 <label className="form-label">Paragraph 2</label>
-                <textarea className="form-control" rows={2} name="approachDesc2" value={formData.approachDesc2} onChange={handleChange} />
+                <textarea className="form-control" rows={2} name="approachDesc2" value={formData.approachDesc2 || ''} onChange={handleChange} />
               </div>
               <div className="form-group">
                 <label className="form-label">Highlight Box Text</label>
-                <textarea className="form-control" rows={2} name="approachHighlight" value={formData.approachHighlight} onChange={handleChange} />
+                <textarea className="form-control" rows={2} name="approachHighlight" value={formData.approachHighlight || ''} onChange={handleChange} />
               </div>
             </div>
 
@@ -380,15 +390,15 @@ const AboutSectionPage = () => {
               <div style={{ fontWeight: 800, color: '#c054c2', marginBottom: '8px', fontSize: '0.95rem' }}>4. Our Standards Card</div>
               <div className="form-group">
                 <label className="form-label">Subtitle</label>
-                <input className="form-control" name="standardsSubtitle" value={formData.standardsSubtitle} onChange={handleChange} />
+                <input className="form-control" name="standardsSubtitle" value={formData.standardsSubtitle || ''} onChange={handleChange} />
               </div>
               <div className="form-group">
                 <label className="form-label">Description</label>
-                <textarea className="form-control" rows={2} name="standardsDesc" value={formData.standardsDesc} onChange={handleChange} />
+                <textarea className="form-control" rows={2} name="standardsDesc" value={formData.standardsDesc || ''} onChange={handleChange} />
               </div>
               <div className="form-group">
                 <label className="form-label">Bullet Points (1 per line)</label>
-                <textarea className="form-control" rows={4} name="standardsPoints" value={formData.standardsPoints} onChange={handleChange} placeholder="Enter bullet points, one per line..." />
+                <textarea className="form-control" rows={4} name="standardsPoints" value={formData.standardsPoints || ''} onChange={handleChange} placeholder="Enter bullet points, one per line..." />
               </div>
             </div>
 
@@ -406,28 +416,28 @@ const AboutSectionPage = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div className="form-group">
               <label className="form-label">Subhead</label>
-              <input className="form-control" name="leadershipSubhead" value={formData.leadershipSubhead} onChange={handleChange} />
+              <input className="form-control" name="leadershipSubhead" value={formData.leadershipSubhead || ''} onChange={handleChange} />
             </div>
 
             <div className="form-group">
               <label className="form-label">Leadership Title</label>
-              <input className="form-control" name="leadershipTitle" value={formData.leadershipTitle} onChange={handleChange} />
+              <input className="form-control" name="leadershipTitle" value={formData.leadershipTitle || ''} onChange={handleChange} />
             </div>
           </div>
 
           <div className="form-group">
             <label className="form-label">Leadership Paragraph 1</label>
-            <textarea className="form-control" rows={2} name="leadershipDesc1" value={formData.leadershipDesc1} onChange={handleChange} />
+            <textarea className="form-control" rows={2} name="leadershipDesc1" value={formData.leadershipDesc1 || ''} onChange={handleChange} />
           </div>
 
           <div className="form-group">
             <label className="form-label">Leadership Paragraph 2</label>
-            <textarea className="form-control" rows={2} name="leadershipDesc2" value={formData.leadershipDesc2} onChange={handleChange} />
+            <textarea className="form-control" rows={2} name="leadershipDesc2" value={formData.leadershipDesc2 || ''} onChange={handleChange} />
           </div>
 
           <div className="form-group">
             <label className="form-label">Leadership Paragraph 3</label>
-            <textarea className="form-control" rows={2} name="leadershipDesc3" value={formData.leadershipDesc3} onChange={handleChange} />
+            <textarea className="form-control" rows={2} name="leadershipDesc3" value={formData.leadershipDesc3 || ''} onChange={handleChange} />
           </div>
         </div>
 
@@ -441,33 +451,33 @@ const AboutSectionPage = () => {
 
           <div className="form-group">
             <label className="form-label">CTA Section Title</label>
-            <input className="form-control" name="ctaTitle" value={formData.ctaTitle} onChange={handleChange} />
+            <input className="form-control" name="ctaTitle" value={formData.ctaTitle || ''} onChange={handleChange} />
           </div>
 
           <div className="form-group">
             <label className="form-label">CTA Description</label>
-            <textarea className="form-control" rows={2} name="ctaDesc" value={formData.ctaDesc} onChange={handleChange} />
+            <textarea className="form-control" rows={2} name="ctaDesc" value={formData.ctaDesc || ''} onChange={handleChange} />
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
             <div className="form-group">
               <label className="form-label">Button 1 Label</label>
-              <input className="form-control" name="ctaBtn1Text" value={formData.ctaBtn1Text} onChange={handleChange} />
+              <input className="form-control" name="ctaBtn1Text" value={formData.ctaBtn1Text || ''} onChange={handleChange} />
             </div>
 
             <div className="form-group">
               <label className="form-label">Button 1 URL Link</label>
-              <input className="form-control" name="ctaBtn1Url" value={formData.ctaBtn1Url} onChange={handleChange} />
+              <input className="form-control" name="ctaBtn1Url" value={formData.ctaBtn1Url || ''} onChange={handleChange} />
             </div>
 
             <div className="form-group">
               <label className="form-label">Button 2 Label</label>
-              <input className="form-control" name="ctaBtn2Text" value={formData.ctaBtn2Text} onChange={handleChange} />
+              <input className="form-control" name="ctaBtn2Text" value={formData.ctaBtn2Text || ''} onChange={handleChange} />
             </div>
 
             <div className="form-group">
               <label className="form-label">Button 2 URL Link</label>
-              <input className="form-control" name="ctaBtn2Url" value={formData.ctaBtn2Url} onChange={handleChange} />
+              <input className="form-control" name="ctaBtn2Url" value={formData.ctaBtn2Url || ''} onChange={handleChange} />
             </div>
           </div>
         </div>
