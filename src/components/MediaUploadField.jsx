@@ -6,18 +6,12 @@ const MediaUploadField = ({ label, value, onChange, placeholder = "Drag & Drop V
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
-    setHasError(false);
-  }, [value]);
 
   const processFile = async (file) => {
     if (!file) return;
 
     setUploading(true);
     setUploadProgress(0);
-    setHasError(false);
 
     try {
       const formData = new FormData();
@@ -35,15 +29,11 @@ const MediaUploadField = ({ label, value, onChange, placeholder = "Drag & Drop V
       if (res.data?.imageUrl) {
         onChange(res.data.imageUrl);
       } else {
-        const reader = new FileReader();
-        reader.onload = (event) => onChange(event.target.result);
-        reader.readAsDataURL(file);
+        alert('Server did not return a valid file URL. Please try again.');
       }
     } catch (err) {
       console.error('File upload failed:', err);
-      const reader = new FileReader();
-      reader.onload = (event) => onChange(event.target.result);
-      reader.readAsDataURL(file);
+      alert('Upload failed: ' + (err.response?.data?.message || err.message || 'Server error'));
     } finally {
       setUploading(false);
       setUploadProgress(0);
@@ -78,8 +68,7 @@ const MediaUploadField = ({ label, value, onChange, placeholder = "Drag & Drop V
     typeof value === 'string' &&
     value.trim().length > 0 &&
     value !== 'null' &&
-    value !== 'undefined' &&
-    !hasError
+    value !== 'undefined'
   );
 
   const isVideo = hasValidValue && (value.endsWith('.mp4') || value.endsWith('.webm') || value.endsWith('.mov') || value.includes('/video/upload/') || value.includes('/uploads/') || value.startsWith('data:video'));
@@ -113,7 +102,7 @@ const MediaUploadField = ({ label, value, onChange, placeholder = "Drag & Drop V
             <div style={{ fontSize: '0.9rem', color: '#c054c2', fontWeight: 800 }}>
               {uploadProgress < 100
                 ? `Uploading Media: ${uploadProgress}%`
-                : `100% - Processing & Finalizing Media on Server...`}
+                : `100% - Finalizing Media on Server...`}
             </div>
             <div style={{ width: '100%', height: '8px', background: '#e2e8f0', borderRadius: '100px', overflow: 'hidden' }}>
               <div style={{ width: `${uploadProgress}%`, height: '100%', background: 'linear-gradient(90deg, #c054c2, #8b5cf6)', transition: 'width 0.2s ease-out' }}></div>
@@ -126,7 +115,6 @@ const MediaUploadField = ({ label, value, onChange, placeholder = "Drag & Drop V
                 <video
                   src={value}
                   controls
-                  onError={() => setHasError(true)}
                   style={{
                     maxHeight: '160px',
                     maxWidth: '100%',
@@ -139,7 +127,6 @@ const MediaUploadField = ({ label, value, onChange, placeholder = "Drag & Drop V
                 <img
                   src={value}
                   alt="Media Preview"
-                  onError={() => setHasError(true)}
                   style={{
                     maxHeight: '140px',
                     maxWidth: '100%',
