@@ -7,7 +7,7 @@ import Dashboard from './pages/Dashboard';
 import HeroSection from './pages/HeroSection';
 import Certifications from './pages/Certifications';
 import AboutSectionPage from './pages/AboutSectionPage';
-import DivisionsPage from './pages/DivisionsPage';
+import DivisionsPageManager from './pages/DivisionsPageManager';
 import MissionVisionPage from './pages/MissionVisionPage';
 import ReviewsPage from './pages/ReviewsPage';
 import EventsPage from './pages/EventsPage';
@@ -19,8 +19,8 @@ import VideoManagementPage from './pages/VideoManagementPage';
 import MilestonesPage from './pages/MilestonesPage';
 
 const VALID_TABS = [
-  'dashboard', 'products', 'departments', 'about-us', 'milestones', 'hero-section', 'certifications', 'about-section',
-  'divisions', 'mission-vision', 'reviews', 'events', 'careers',
+  'dashboard', 'products', 'departments', 'about-us', 'milestones', 'divisions', 'divisions-page', 'hero-section', 'certifications', 'about-section',
+  'mission-vision', 'reviews', 'events', 'careers',
   'contact-messages', 'newsletter-subscribers', 'home-video'
 ];
 
@@ -83,7 +83,7 @@ const MainLayout = () => {
           {activeTab === 'hero-section' && <HeroSection />}
           {activeTab === 'certifications' && <Certifications />}
           {(activeTab === 'about-section' || activeTab === 'about-us') && <AboutSectionPage />}
-          {(activeTab === 'divisions' || activeTab === 'products') && <DivisionsPage />}
+          {(activeTab === 'divisions-page' || activeTab === 'divisions') && <DivisionsPageManager />}
           {activeTab === 'departments' && <DepartmentsPage />}
           {activeTab === 'milestones' && <MilestonesPage />}
           {activeTab === 'mission-vision' && <MissionVisionPage />}

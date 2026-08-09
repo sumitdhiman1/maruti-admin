@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Compass, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag } from 'lucide-react';
+import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Compass, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag, Layers } from 'lucide-react';
 
 const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'mission-vision', 'reviews', 'home-video'];
 const aboutSubTabs = ['about-us', 'about-section', 'milestones'];
@@ -39,7 +39,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         </li>
 
         {/* Products Main Menu */}
-        <li className={`menu-item ${activeTab === 'products' || activeTab === 'divisions' ? 'active' : ''}`}>
+        <li className={`menu-item ${activeTab === 'products' ? 'active' : ''}`}>
           <button
             onClick={() => {
               setActiveTab('products');
@@ -49,6 +49,20 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           >
             <Package size={20} />
             <span>Products</span>
+          </button>
+        </li>
+
+        {/* Divisions Page Menu */}
+        <li className={`menu-item ${activeTab === 'divisions-page' || activeTab === 'divisions' ? 'active' : ''}`}>
+          <button
+            onClick={() => {
+              setActiveTab('divisions-page');
+              setHomeOpen(false);
+              setAboutOpen(false);
+            }}
+          >
+            <Layers size={20} />
+            <span>Divisions</span>
           </button>
         </li>
 
