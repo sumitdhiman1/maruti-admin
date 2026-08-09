@@ -2,26 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Check, Package, UploadCloud, Loader2, ChevronDown, Search } from 'lucide-react';
 import api from '../services/api';
 
-const CATEGORY_OPTIONS = [
-  { value: 'General', label: 'General' },
-  { value: 'ANTIFUNGALS', label: 'ANTIFUNGALS' },
-  { value: 'ANTIBACTERIALS', label: 'ANTIBACTERIALS' },
-  { value: 'CORTICOSTEROIDS', label: 'CORTICOSTEROIDS' },
-  { value: 'ANTI-ACNE', label: 'ANTI-ACNE' },
-  { value: 'ANTIALLERGICS', label: 'ANTIALLERGICS' },
-  { value: 'EMOLLEINTS AND SKIN NOURISHERS / MOISTURIZERS', label: 'EMOLLEINTS & MOISTURIZERS' },
-  { value: 'SUNSCREENS', label: 'SUNSCREENS' },
-  { value: 'ANTI-DANDRUFF AND HAIR CARE', label: 'HAIR CARE & DANDRUFF' },
-  { value: 'CLEANSING LOTIONS / SOAPS', label: 'CLEANSING LOTIONS / SOAPS' },
-  { value: 'IMMUNOMODULATORS', label: 'IMMUNOMODULATORS' },
-  { value: 'SCABICIDES / PEDICULICIDES', label: 'SCABICIDES / PEDICULICIDES' },
-  { value: 'ANTI PERSPIRENT', label: 'ANTI PERSPIRENT' },
-  { value: 'DEPIGMENTING AGENT', label: 'DEPIGMENTING AGENT' },
-  { value: 'ANTI ULCERANT', label: 'ANTI ULCERANT' },
-  { value: 'PAIN MANAGEMENT / ANALGESICS', label: 'PAIN MANAGEMENT' },
+const DEFAULT_CATEGORIES = [
+  'General', 'ANTIFUNGALS', 'ANTIBACTERIALS', 'CORTICOSTEROIDS', 'ANTI-ACNE',
+  'ANTIALLERGICS', 'EMOLLEINTS AND SKIN NOURISHERS / MOISTURIZERS', 'SUNSCREENS',
+  'ANTI-DANDRUFF AND HAIR CARE', 'CLEANSING LOTIONS / SOAPS', 'IMMUNOMODULATORS',
+  'SCABICIDES / PEDICULICIDES', 'ANTI PERSPIRENT', 'DEPIGMENTING AGENT',
+  'ANTI ULCERANT', 'PAIN MANAGEMENT / ANALGESICS'
 ];
 
-const ProductModal = ({ isOpen, onClose, onSave, item }) => {
+const ProductModal = ({ isOpen, onClose, onSave, item, existingCategories = [] }) => {
   const [formData, setFormData] = useState({
     division: 'Derma A',
     category: 'General',
@@ -129,7 +118,11 @@ const ProductModal = ({ isOpen, onClose, onSave, item }) => {
     }
   };
 
-  const filteredCategoryOptions = CATEGORY_OPTIONS.filter((opt) =>
+  // Combine dynamic categories from admin listing page + defaults
+  const allCategories = Array.from(new Set([...existingCategories, ...DEFAULT_CATEGORIES].filter(Boolean)));
+  const categoryOptions = allCategories.map(cat => ({ value: cat, label: cat }));
+
+  const filteredCategoryOptions = categoryOptions.filter((opt) =>
     opt.label.toLowerCase().includes(catSearch.toLowerCase()) ||
     opt.value.toLowerCase().includes(catSearch.toLowerCase())
   );
