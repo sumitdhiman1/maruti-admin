@@ -16,9 +16,10 @@ import NewsletterPage from './pages/NewsletterPage';
 import CareersPage from './pages/CareersPage';
 import DepartmentsPage from './pages/DepartmentsPage';
 import VideoManagementPage from './pages/VideoManagementPage';
+import MilestonesPage from './pages/MilestonesPage';
 
 const VALID_TABS = [
-  'dashboard', 'products', 'departments', 'about-us', 'hero-section', 'certifications', 'about-section',
+  'dashboard', 'products', 'departments', 'about-us', 'milestones', 'hero-section', 'certifications', 'about-section',
   'divisions', 'mission-vision', 'reviews', 'events', 'careers',
   'contact-messages', 'newsletter-subscribers', 'home-video'
 ];
@@ -84,6 +85,7 @@ const MainLayout = () => {
           {(activeTab === 'about-section' || activeTab === 'about-us') && <AboutSectionPage />}
           {(activeTab === 'divisions' || activeTab === 'products') && <DivisionsPage />}
           {activeTab === 'departments' && <DepartmentsPage />}
+          {activeTab === 'milestones' && <MilestonesPage />}
           {activeTab === 'mission-vision' && <MissionVisionPage />}
           {activeTab === 'reviews' && <ReviewsPage />}
           {activeTab === 'events' && <EventsPage />}

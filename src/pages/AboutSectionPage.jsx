@@ -42,15 +42,29 @@ const AboutSectionPage = () => {
     // Sales & Marketing Department
     deptIntro: 'At Maruti Pharma Pvt. Ltd., Sales and Marketing work together as two interconnected functions with a shared objective of delivering value to healthcare professionals, patients, and society.',
     mktSubtitle: 'Building Brands & Creating Value',
+    mktDesc: 'Marketing is a strategic, customer-focused function responsible for understanding market needs, developing brand strategies, and creating awareness about healthcare solutions. It focuses on long-term brand building through:',
+    mktPoints: 'Market research and customer insights\nBrand positioning and product differentiation\nScientific communication and promotional strategies\nDisease awareness and healthcare initiatives\nDevelopment of marketing tools to support field execution',
+    mktFooter: 'Marketing creates opportunities by generating awareness, building trust, and strengthening brand value.',
+
     salesSubtitle: 'Connecting Healthcare Solutions with Customers',
+    salesDesc: 'Sales is responsible for effective market execution by establishing direct relationships with healthcare professionals, pharmacies, and business partners. The sales team plays a vital role in:',
+    salesPoints: 'Communicating product benefits through ethical and scientific detailing\nBuilding strong relationships with doctors and healthcare providers\nEnsuring product availability and market reach\nGathering valuable market feedback\nAchieving sustainable business growth',
+
     approachSubtitle: 'Integrated Sales & Marketing Approach',
+    approachDesc1: 'The collaboration between Sales and Marketing enables better customer understanding, improved brand performance, and enhanced healthcare delivery.',
+    approachDesc2: 'Marketing provides strategic direction, scientific content, and market intelligence, while Sales executes these strategies through strong customer engagement and field excellence.',
+    approachHighlight: 'At Maruti Pharma Pvt. Ltd., our Sales & Marketing teams are committed to promoting quality medicines responsibly, strengthening partnerships with healthcare professionals, and contributing toward improved healthcare outcomes in Nepal.',
+
     standardsSubtitle: 'Pharmaceutical Sales & Marketing Excellence',
+    standardsDesc: 'Pharmaceutical sales and marketing require a strong understanding of:',
+    standardsPoints: 'Therapeutic areas and product knowledge\nClinical evidence and treatment guidelines\nMarket trends and competitive intelligence\nHealthcare professional engagement\nRegulatory and ethical promotional practices',
 
     // Leadership
     leadershipSubhead: 'The People Behind Our Success',
     leadershipTitle: 'Vision that shapes tomorrow\'s healthcare',
     leadershipDesc1: 'The leadership team at Maruti Pharma Pvt. Ltd. is committed to achieving our vision of delivering high-quality healthcare solutions through innovation, advanced technology, and excellence in pharmaceutical practices.',
     leadershipDesc2: 'Our Board of Directors provides strategic direction, strong governance, and visionary leadership to ensure sustainable growth while strengthening our commitment to serving the healthcare needs of the nation.',
+    leadershipDesc3: 'With a focus on quality, innovation, integrity, and patient-centric healthcare, the Maruti leadership team continues to inspire progress and build a healthier future.',
   });
 
   const [saving, setSaving] = useState(false);
@@ -282,35 +296,94 @@ const AboutSectionPage = () => {
         <div className="card" style={{ margin: 0 }}>
           <div className="card-header">
             <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <TrendingUp size={20} color="#c054c2" /> Sales &amp; Marketing Department Section
+              <TrendingUp size={20} color="#c054c2" /> Sales &amp; Marketing Department Section Controls
             </h3>
           </div>
 
           <div className="form-group">
-            <label className="form-label">Department Introduction Text</label>
+            <label className="form-label">Department Section Header Intro Description</label>
             <textarea className="form-control" rows={2} name="deptIntro" value={formData.deptIntro} onChange={handleChange} />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div className="form-group">
-              <label className="form-label">Marketing Card Subtitle</label>
-              <input className="form-control" name="mktSubtitle" value={formData.mktSubtitle} onChange={handleChange} />
+          {/* Grid of 4 Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.2rem' }}>
+
+            {/* Card 1: Marketing */}
+            <div style={{ background: '#f8fafc', padding: '1.2rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontWeight: 800, color: '#c054c2', marginBottom: '8px', fontSize: '0.95rem' }}>1. Marketing Card</div>
+              <div className="form-group">
+                <label className="form-label">Subtitle</label>
+                <input className="form-control" name="mktSubtitle" value={formData.mktSubtitle} onChange={handleChange} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea className="form-control" rows={2} name="mktDesc" value={formData.mktDesc} onChange={handleChange} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Bullet Points (1 per line)</label>
+                <textarea className="form-control" rows={4} name="mktPoints" value={formData.mktPoints} onChange={handleChange} placeholder="Enter bullet points, one per line..." />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Footer Italic Text</label>
+                <input className="form-control" name="mktFooter" value={formData.mktFooter} onChange={handleChange} />
+              </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Sales Card Subtitle</label>
-              <input className="form-control" name="salesSubtitle" value={formData.salesSubtitle} onChange={handleChange} />
+            {/* Card 2: Sales */}
+            <div style={{ background: '#f8fafc', padding: '1.2rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontWeight: 800, color: '#c054c2', marginBottom: '8px', fontSize: '0.95rem' }}>2. Sales Card</div>
+              <div className="form-group">
+                <label className="form-label">Subtitle</label>
+                <input className="form-control" name="salesSubtitle" value={formData.salesSubtitle} onChange={handleChange} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea className="form-control" rows={2} name="salesDesc" value={formData.salesDesc} onChange={handleChange} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Bullet Points (1 per line)</label>
+                <textarea className="form-control" rows={4} name="salesPoints" value={formData.salesPoints} onChange={handleChange} placeholder="Enter bullet points, one per line..." />
+              </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Approach Card Subtitle</label>
-              <input className="form-control" name="approachSubtitle" value={formData.approachSubtitle} onChange={handleChange} />
+            {/* Card 3: Our Approach */}
+            <div style={{ background: '#f8fafc', padding: '1.2rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontWeight: 800, color: '#c054c2', marginBottom: '8px', fontSize: '0.95rem' }}>3. Our Approach Card</div>
+              <div className="form-group">
+                <label className="form-label">Subtitle</label>
+                <input className="form-control" name="approachSubtitle" value={formData.approachSubtitle} onChange={handleChange} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Paragraph 1</label>
+                <textarea className="form-control" rows={2} name="approachDesc1" value={formData.approachDesc1} onChange={handleChange} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Paragraph 2</label>
+                <textarea className="form-control" rows={2} name="approachDesc2" value={formData.approachDesc2} onChange={handleChange} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Highlight Box Text</label>
+                <textarea className="form-control" rows={2} name="approachHighlight" value={formData.approachHighlight} onChange={handleChange} />
+              </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Standards Card Subtitle</label>
-              <input className="form-control" name="standardsSubtitle" value={formData.standardsSubtitle} onChange={handleChange} />
+            {/* Card 4: Our Standards */}
+            <div style={{ background: '#f8fafc', padding: '1.2rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontWeight: 800, color: '#c054c2', marginBottom: '8px', fontSize: '0.95rem' }}>4. Our Standards Card</div>
+              <div className="form-group">
+                <label className="form-label">Subtitle</label>
+                <input className="form-control" name="standardsSubtitle" value={formData.standardsSubtitle} onChange={handleChange} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea className="form-control" rows={2} name="standardsDesc" value={formData.standardsDesc} onChange={handleChange} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Bullet Points (1 per line)</label>
+                <textarea className="form-control" rows={4} name="standardsPoints" value={formData.standardsPoints} onChange={handleChange} placeholder="Enter bullet points, one per line..." />
+              </div>
             </div>
+
           </div>
         </div>
 

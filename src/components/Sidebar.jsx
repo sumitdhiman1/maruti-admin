@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Layers, Compass, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info } from 'lucide-react';
+import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Layers, Compass, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag } from 'lucide-react';
 
 const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'mission-vision', 'reviews', 'home-video'];
 
@@ -73,6 +73,19 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           >
             <Info size={20} />
             <span>About Us Page</span>
+          </button>
+        </li>
+
+        {/* Milestones Menu */}
+        <li className={`menu-item ${activeTab === 'milestones' ? 'active' : ''}`}>
+          <button
+            onClick={() => {
+              setActiveTab('milestones');
+              setHomeOpen(false);
+            }}
+          >
+            <Flag size={20} />
+            <span>Milestones</span>
           </button>
         </li>
 
