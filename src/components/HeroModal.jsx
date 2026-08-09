@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, UploadCloud, Calendar, Sparkles, CheckCircle } from 'lucide-react';
-import api from '../services/api';
+import { X, Calendar, Sparkles, Check } from 'lucide-react';
+import ImageUploadField from './ImageUploadField';
 
 const HeroModal = ({ isOpen, onClose, onSave, banner = null }) => {
   const [bannerType, setBannerType] = useState('DefaultHero');
@@ -21,7 +21,7 @@ const HeroModal = ({ isOpen, onClose, onSave, banner = null }) => {
     status: 'Active',
   });
 
-  const [uploading, setUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (banner) {
@@ -73,44 +73,7 @@ const HeroModal = ({ isOpen, onClose, onSave, banner = null }) => {
     }));
   };
 
-  // Convert File to Base64 & Upload to Cloudinary API
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setUploading(true);
-
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const base64Image = event.target.result;
-
-      try {
-        const response = await api.post('/upload', { image: base64Image });
-
-        if (response.data?.imageUrl) {
-          setFormData((prev) => ({
-            ...prev,
-            imageUrl: response.data.imageUrl,
-            cloudinaryPublicId: response.data.publicId || '',
-          }));
-          setUploading(false);
-          return;
-        }
-      } catch (err) {
-        console.warn('Cloudinary API upload note, using file preview:', err.message);
-      }
-
-      setFormData((prev) => ({
-        ...prev,
-        imageUrl: base64Image,
-      }));
-      setUploading(false);
-    };
-
-    reader.readAsDataURL(file);
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.imageUrl) {
       alert('Please select and upload an image file first.');
@@ -122,262 +85,233 @@ const HeroModal = ({ isOpen, onClose, onSave, banner = null }) => {
       startDate: formData.startDate && formData.startDate !== '' ? formData.startDate : null,
       endDate: formData.endDate && formData.endDate !== '' ? formData.endDate : null,
     };
-    onSave(payload);
+    try {
+      setIsSubmitting(true);
+      await onSave(payload);
+    } catch (err) {
+      console.error('Failed saving hero banner:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content" style={{ maxWidth: '650px' }}>
-        <div className="modal-header">
-          <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Sparkles size={20} color="#ffc107" />
-            {banner ? 'Edit Hero Banner Data' : 'Add Dynamic Hero / Event Banner'}
-          </h3>
-          <button className="modal-close" onClick={onClose}>
-            <X size={20} />
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '720px' }}>
+        
+        {/* Header */}
+        <div className="modal-header" style={{ background: 'linear-gradient(135deg, #0e0714, #260e36)', color: '#ffffff' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(192, 84, 194, 0.2)', border: '1px solid #c054c2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Sparkles size={20} color="#c054c2" />
+            </div>
+            <div>
+              <h3 className="modal-title" style={{ color: '#ffffff', fontSize: '1.2rem', margin: 0 }}>
+                {banner ? 'Edit Hero Banner Popup' : 'Add Hero / Festival Banner'}
+              </h3>
+              <div style={{ fontSize: '0.78rem', color: '#cbd5e1' }}>
+                Configure title, subtitle, dates, and Cloudinary media in this popup
+              </div>
+            </div>
+          </div>
+
+          <button className="btn-close" onClick={onClose} style={{ color: '#ffffff', background: 'rgba(255,255,255,0.1)' }}>
+            <X size={18} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="modal-body">
-          {/* Banner Type Tabs */}
-          <div className="form-group">
-            <label className="form-label">Banner Classification</label>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button
-                type="button"
-                className={`btn ${bannerType === 'DefaultHero' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, justifyContent: 'center' }}
-                onClick={() => {
-                  setBannerType('DefaultHero');
-                  setFormData((prev) => ({ ...prev, isDefault: true }));
-                }}
-              >
-                ⭐ Main Hero Banner (Visible First)
-              </button>
-              <button
-                type="button"
-                className={`btn ${bannerType === 'FestivalEvent' ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ flex: 1, justifyContent: 'center' }}
-                onClick={() => {
-                  setBannerType('FestivalEvent');
-                  setFormData((prev) => ({ ...prev, isDefault: false }));
-                }}
-              >
-                🎉 Festival / Event Banner (Date Scheduled)
-              </button>
-            </div>
-          </div>
-
-          {/* Cloudinary Upload Dropzone */}
-          <div className="form-group">
-            <label className="form-label">Cloudinary Image Upload ☁️</label>
-            <div
-              style={{
-                border: '2px dashed #c054c2',
-                borderRadius: '12px',
-                padding: '1.5rem',
-                textAlign: 'center',
-                background: '#faf5fa',
-                cursor: 'pointer',
-                position: 'relative',
-              }}
-            >
-              {formData.imageUrl ? (
-                <div>
-                  <img
-                    src={formData.imageUrl}
-                    alt="Uploaded Banner Preview"
-                    style={{
-                      maxHeight: '150px',
-                      maxWidth: '100%',
-                      objectFit: 'cover',
-                      borderRadius: '8px',
-                      marginBottom: '8px',
-                      border: '2px solid #c054c2',
-                    }}
-                  />
-                  <div style={{ fontSize: '0.85rem', color: '#15803d', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                    <CheckCircle size={16} /> Cloudinary Media Upload Ready
-                  </div>
-                  <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Click to select a different image file</span>
-                </div>
-              ) : (
-                <div>
-                  <UploadCloud size={40} color="#c054c2" style={{ marginBottom: '8px' }} />
-                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a' }}>
-                    {uploading ? 'Uploading to Cloudinary ☁️...' : 'Click to Upload Image File to Cloudinary'}
-                  </div>
-                  <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '4px' }}>
-                    Supports PNG, JPG, WEBP media formats
-                  </p>
-                </div>
-              )}
-
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileUpload}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  opacity: 0,
-                  cursor: 'pointer',
-                }}
-              />
-            </div>
-          </div>
-
-          {bannerType === 'FestivalEvent' ? (
-            <div>
-              <div className="form-group">
-                <label className="form-label">Festival / Event Name (e.g. Diwali Offer, Holi Special)</label>
-                <input
-                  type="text"
-                  name="eventName"
-                  required
-                  className="form-control"
-                  placeholder="e.g. Diwali Mega Event, Holi Special Discount"
-                  value={formData.eventName}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Calendar size={16} color="#c054c2" /> Event Start Date
-                  </label>
-                  <input
-                    type="date"
-                    name="startDate"
-                    required
-                    className="form-control"
-                    value={formData.startDate}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Calendar size={16} color="#c054c2" /> Event End Date
-                  </label>
-                  <input
-                    type="date"
-                    name="endDate"
-                    required
-                    className="form-control"
-                    value={formData.endDate}
-                    onChange={handleChange}
-                  />
-                </div>
+        {/* Form Body */}
+        <form onSubmit={handleSubmit}>
+          <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '1.5rem' }}>
+            
+            {/* Banner Type Selection */}
+            <div className="form-group" style={{ margin: 0 }}>
+              <label className="form-label">Banner Classification</label>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <button
+                  type="button"
+                  className={`btn ${bannerType === 'DefaultHero' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ flex: 1, justifyContent: 'center' }}
+                  onClick={() => {
+                    setBannerType('DefaultHero');
+                    setFormData((prev) => ({ ...prev, isDefault: true }));
+                  }}
+                >
+                  ⭐ Main Hero Banner (Always Visible)
+                </button>
+                <button
+                  type="button"
+                  className={`btn ${bannerType === 'FestivalEvent' ? 'btn-primary' : 'btn-secondary'}`}
+                  style={{ flex: 1, justifyContent: 'center' }}
+                  onClick={() => {
+                    setBannerType('FestivalEvent');
+                    setFormData((prev) => ({ ...prev, isDefault: false }));
+                  }}
+                >
+                  🎉 Festival / Event Banner (Scheduled)
+                </button>
               </div>
             </div>
-          ) : (
-            <div>
-              <div className="form-group">
-                <label className="form-label">Top Badge Text</label>
-                <input
-                  type="text"
-                  name="badgeText"
-                  className="form-control"
-                  placeholder="e.g. • WHO-GMP & ISO 9001:2015 Certified"
-                  value={formData.badgeText}
-                  onChange={handleChange}
-                />
-              </div>
 
-              <div className="form-group">
-                <label className="form-label">Hero Title / Heading</label>
-                <input
-                  type="text"
-                  name="title"
-                  className="form-control"
-                  placeholder="e.g. Inspiring New Hope For Healthy Life"
-                  value={formData.title}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Hero Subtitle / Description</label>
-                <textarea
-                  name="subtitle"
-                  rows="3"
-                  className="form-control"
-                  placeholder="e.g. At Maruti, we combine scientific expertise..."
-                  value={formData.subtitle}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Primary Button Text & Link</label>
-                  <input
-                    type="text"
-                    name="primaryBtnText"
-                    className="form-control"
-                    placeholder="Button Text (e.g. Explore Our Products)"
-                    value={formData.primaryBtnText}
-                    onChange={handleChange}
-                    style={{ marginBottom: '6px' }}
-                  />
-                  <input
-                    type="text"
-                    name="primaryBtnLink"
-                    className="form-control"
-                    placeholder="Link (e.g. #products)"
-                    value={formData.primaryBtnLink}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">Secondary Button Text & Link</label>
-                  <input
-                    type="text"
-                    name="secondaryBtnText"
-                    className="form-control"
-                    placeholder="Button Text (e.g. About Maruti)"
-                    value={formData.secondaryBtnText}
-                    onChange={handleChange}
-                    style={{ marginBottom: '6px' }}
-                  />
-                  <input
-                    type="text"
-                    name="secondaryBtnLink"
-                    className="form-control"
-                    placeholder="Link (e.g. #about)"
-                    value={formData.secondaryBtnLink}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '1rem' }}>
-            <input
-              type="checkbox"
-              id="isDefault"
-              name="isDefault"
-              checked={formData.isDefault}
-              onChange={handleChange}
+            {/* Department-Style Common Drag & Drop Image Uploader */}
+            <ImageUploadField
+              label="Banner Image (Drag & Drop or Click to Upload)"
+              value={formData.imageUrl || ''}
+              onChange={(url) => setFormData(prev => ({ ...prev, imageUrl: url || '' }))}
+              placeholder="Drag & drop banner image here or browse"
             />
-            <label htmlFor="isDefault" className="form-label" style={{ margin: 0, cursor: 'pointer', fontWeight: 700 }}>
-              Set as Default Banner (Visible First on Site)
-            </label>
+
+            {bannerType === 'FestivalEvent' ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Festival / Event Name *</label>
+                  <input
+                    type="text"
+                    name="eventName"
+                    required
+                    className="form-control"
+                    placeholder="e.g. Diwali Mega Festival, Dashain Special"
+                    value={formData.eventName}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Calendar size={16} color="#c054c2" /> Event Start Date
+                    </label>
+                    <input
+                      type="date"
+                      name="startDate"
+                      required
+                      className="form-control"
+                      value={formData.startDate || ''}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Calendar size={16} color="#c054c2" /> Event End Date
+                    </label>
+                    <input
+                      type="date"
+                      name="endDate"
+                      required
+                      className="form-control"
+                      value={formData.endDate || ''}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Top Badge Text</label>
+                  <input
+                    type="text"
+                    name="badgeText"
+                    className="form-control"
+                    placeholder="e.g. • WHO-GMP & ISO 9001:2015 Certified"
+                    value={formData.badgeText}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Hero Title / Heading</label>
+                  <input
+                    type="text"
+                    name="title"
+                    className="form-control"
+                    placeholder="e.g. Inspiring New Hope For Healthy Life"
+                    value={formData.title}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Hero Subtitle / Description</label>
+                  <textarea
+                    name="subtitle"
+                    rows="3"
+                    className="form-control"
+                    placeholder="e.g. At Maruti, we combine scientific expertise..."
+                    value={formData.subtitle}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Primary Button Text &amp; Link</label>
+                    <input
+                      type="text"
+                      name="primaryBtnText"
+                      className="form-control"
+                      placeholder="Text (e.g. Explore Our Products)"
+                      value={formData.primaryBtnText}
+                      onChange={handleChange}
+                      style={{ marginBottom: '6px' }}
+                    />
+                    <input
+                      type="text"
+                      name="primaryBtnLink"
+                      className="form-control"
+                      placeholder="Link (e.g. #products)"
+                      value={formData.primaryBtnLink}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Secondary Button Text &amp; Link</label>
+                    <input
+                      type="text"
+                      name="secondaryBtnText"
+                      className="form-control"
+                      placeholder="Text (e.g. About Maruti)"
+                      value={formData.secondaryBtnText}
+                      onChange={handleChange}
+                      style={{ marginBottom: '6px' }}
+                    />
+                    <input
+                      type="text"
+                      name="secondaryBtnLink"
+                      className="form-control"
+                      placeholder="Link (e.g. #about)"
+                      value={formData.secondaryBtnLink}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+              <input
+                type="checkbox"
+                id="isDefault"
+                name="isDefault"
+                checked={formData.isDefault}
+                onChange={handleChange}
+              />
+              <label htmlFor="isDefault" className="form-label" style={{ margin: 0, cursor: 'pointer', fontWeight: 700 }}>
+                Set as Default Banner (Visible First on Site)
+              </label>
+            </div>
+
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '1.5rem' }}>
+          {/* Footer */}
+          <div className="modal-footer">
             <button type="button" className="btn btn-secondary" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit" className="btn btn-primary">
-              Save Hero Banner Data
+            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+              <Check size={18} /> {isSubmitting ? 'Saving...' : banner ? 'Update Hero Banner' : 'Add Hero Banner'}
             </button>
           </div>
         </form>
