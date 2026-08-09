@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import ImageUploadField from '../components/ImageUploadField';
-import { Save, CheckCircle, Info, Sparkles, Award, Users } from 'lucide-react';
+import { Save, CheckCircle, Info, Sparkles, Award, Users, TrendingUp } from 'lucide-react';
 
 const AboutSectionPage = () => {
   const [formData, setFormData] = useState({
@@ -38,6 +38,13 @@ const AboutSectionPage = () => {
     behavior3Desc: 'We deliver on our promises and go beyond expectations to earn the trust of our partners.',
     behavior4Title: 'Our Expertise',
     behavior4Desc: 'We deliver on our promises and go beyond expectations to earn the trust of our customers and stakeholders.',
+
+    // Sales & Marketing Department
+    deptIntro: 'At Maruti Pharma Pvt. Ltd., Sales and Marketing work together as two interconnected functions with a shared objective of delivering value to healthcare professionals, patients, and society.',
+    mktSubtitle: 'Building Brands & Creating Value',
+    salesSubtitle: 'Connecting Healthcare Solutions with Customers',
+    approachSubtitle: 'Integrated Sales & Marketing Approach',
+    standardsSubtitle: 'Pharmaceutical Sales & Marketing Excellence',
 
     // Leadership
     leadershipSubhead: 'The People Behind Our Success',
@@ -271,7 +278,43 @@ const AboutSectionPage = () => {
           </div>
         </div>
 
-        {/* 4. Leadership & Governance */}
+        {/* 4. Sales & Marketing Department Section */}
+        <div className="card" style={{ margin: 0 }}>
+          <div className="card-header">
+            <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <TrendingUp size={20} color="#c054c2" /> Sales &amp; Marketing Department Section
+            </h3>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Department Introduction Text</label>
+            <textarea className="form-control" rows={2} name="deptIntro" value={formData.deptIntro} onChange={handleChange} />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-group">
+              <label className="form-label">Marketing Card Subtitle</label>
+              <input className="form-control" name="mktSubtitle" value={formData.mktSubtitle} onChange={handleChange} />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Sales Card Subtitle</label>
+              <input className="form-control" name="salesSubtitle" value={formData.salesSubtitle} onChange={handleChange} />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Approach Card Subtitle</label>
+              <input className="form-control" name="approachSubtitle" value={formData.approachSubtitle} onChange={handleChange} />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Standards Card Subtitle</label>
+              <input className="form-control" name="standardsSubtitle" value={formData.standardsSubtitle} onChange={handleChange} />
+            </div>
+          </div>
+        </div>
+
+        {/* 5. Leadership & Governance */}
         <div className="card" style={{ margin: 0 }}>
           <div className="card-header">
             <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -299,6 +342,11 @@ const AboutSectionPage = () => {
           <div className="form-group">
             <label className="form-label">Leadership Paragraph 2</label>
             <textarea className="form-control" rows={2} name="leadershipDesc2" value={formData.leadershipDesc2} onChange={handleChange} />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Leadership Paragraph 3</label>
+            <textarea className="form-control" rows={2} name="leadershipDesc3" value={formData.leadershipDesc3} onChange={handleChange} />
           </div>
         </div>
 
