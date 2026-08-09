@@ -8,6 +8,7 @@ import ProductsPage from './pages/ProductsPage';
 import HeroSection from './pages/HeroSection';
 import Certifications from './pages/Certifications';
 import AboutSectionPage from './pages/AboutSectionPage';
+import HomeAboutSectionPage from './pages/HomeAboutSectionPage';
 import DivisionsPageManager from './pages/DivisionsPageManager';
 import MdMessageManager from './pages/MdMessageManager';
 import ReviewsPage from './pages/ReviewsPage';
@@ -84,7 +85,8 @@ const MainLayout = () => {
           {activeTab === 'products' && <ProductsPage />}
           {activeTab === 'hero-section' && <HeroSection />}
           {activeTab === 'certifications' && <Certifications />}
-          {(activeTab === 'about-section' || activeTab === 'about-us') && <AboutSectionPage />}
+          {activeTab === 'about-section' && <HomeAboutSectionPage />}
+          {activeTab === 'about-us' && <AboutSectionPage />}
           {(activeTab === 'divisions-page' || activeTab === 'divisions') && <DivisionsPageManager />}
           {activeTab === 'departments' && <DepartmentsPage />}
           {activeTab === 'milestones' && <MilestonesPage />}

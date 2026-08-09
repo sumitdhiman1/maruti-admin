@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag, Layers, UserCheck } from 'lucide-react';
 
 const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'md-message', 'reviews', 'home-video'];
-const aboutSubTabs = ['about-us', 'about-section', 'milestones'];
+const aboutSubTabs = ['about-us', 'milestones'];
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const isHomeSubTab = homeSubTabs.includes(activeTab);
@@ -95,7 +95,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 
           {aboutOpen && (
             <ul style={{ listStyle: 'none', paddingLeft: '1.5rem', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <li className={`menu-item ${activeTab === 'about-us' || activeTab === 'about-section' ? 'active' : ''}`}>
+              <li className={`menu-item ${activeTab === 'about-us' ? 'active' : ''}`}>
                 <button
                   onClick={() => setActiveTab('about-us')}
                   style={{ padding: '8px 12px', fontSize: '0.88rem' }}
