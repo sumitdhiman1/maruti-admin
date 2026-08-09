@@ -118,9 +118,6 @@ const MilestonesPage = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          <button className="btn btn-secondary" onClick={handleSeedDocx} disabled={seeding} title="Reload 14 milestones from Docx file">
-            <RotateCcw size={16} /> {seeding ? 'Seeding...' : 'Load All Docx Milestones'}
-          </button>
           <button
             className="btn btn-primary"
             onClick={() => {
