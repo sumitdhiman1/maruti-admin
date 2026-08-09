@@ -91,7 +91,7 @@ const ContactMessagesPage = () => {
   };
 
   return (
-    <div style={{ maxWidth: '1240px', margin: '0 auto' }}>
+    <div style={{ maxWidth: '100%', overflowX: 'hidden' }}>
       {/* Toast Notification */}
       {toastMessage && (
         <div
@@ -147,7 +147,7 @@ const ContactMessagesPage = () => {
       </div>
 
       {/* Analytics Metric Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '20px' }}>
         <div style={{ background: '#ffffff', borderRadius: '16px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
             <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Total Submissions</div>
@@ -196,7 +196,7 @@ const ContactMessagesPage = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b' }}>Status Filter:</span>
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#64748b' }}>Filter Status:</span>
             <button
               onClick={() => setStatusFilter('')}
               className={`badge ${statusFilter === '' ? 'badge-purple' : ''}`}
@@ -222,39 +222,50 @@ const ContactMessagesPage = () => {
         </div>
       </div>
 
-      {/* MESSAGES DATA TABLE */}
-      <div className="card">
-        <div className="table-responsive">
-          <table className="data-table">
+      {/* MESSAGES DATA TABLE WITH FULL RESPONSIVE OVERFLOW CONTROL */}
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ overflowX: 'auto', width: '100%' }}>
+          <table
+            className="data-table"
+            style={{
+              width: '100%',
+              minWidth: '900px',
+              borderCollapse: 'collapse',
+              tableLayout: 'fixed',
+            }}
+          >
             <thead>
-              <tr>
-                <th style={{ width: '60px' }}>#</th>
-                <th>Sender Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Subject</th>
-                <th style={{ minWidth: '220px' }}>Message Body</th>
-                <th>Date Received</th>
-                <th>Status</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
+              <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+                <th style={{ width: '50px', padding: '14px 16px', textAlign: 'center' }}>#</th>
+                <th style={{ width: '240px', padding: '14px 16px' }}>Sender Details</th>
+                <th style={{ width: '320px', padding: '14px 16px' }}>Subject &amp; Message</th>
+                <th style={{ width: '150px', padding: '14px 16px' }}>Date Received</th>
+                <th style={{ width: '130px', padding: '14px 16px' }}>Status</th>
+                <th style={{ width: '140px', padding: '14px 16px', textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="9" style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>
                     Loading contact messages list...
                   </td>
                 </tr>
               ) : filteredMessages.length > 0 ? (
                 filteredMessages.map((msg, index) => (
-                  <tr key={msg.id} style={{ background: msg.status === 'New' ? '#faf5ff' : 'transparent' }}>
-                    <td style={{ padding: '16px 14px', fontWeight: 700, color: '#94a3b8' }}>
+                  <tr
+                    key={msg.id}
+                    style={{
+                      background: msg.status === 'New' ? '#faf5ff' : 'transparent',
+                      borderBottom: '1px solid #f1f5f9',
+                    }}
+                  >
+                    <td style={{ padding: '16px', textAlign: 'center', fontWeight: 700, color: '#94a3b8' }}>
                       {index + 1}
                     </td>
 
-                    <td style={{ padding: '16px 14px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <td style={{ padding: '16px', wordBreak: 'break-word' }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
                         <div
                           style={{
                             width: '36px',
@@ -272,47 +283,45 @@ const ContactMessagesPage = () => {
                         >
                           {getInitials(msg.name)}
                         </div>
-                        <div>
-                          <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.94rem' }}>
-                            {msg.name}
+
+                        <div style={{ minWidth: 0, flexGrow: 1 }}>
+                          <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.94rem', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                            <span>{msg.name}</span>
+                            {msg.status === 'New' && (
+                              <span style={{ background: '#ef4444', color: '#ffffff', borderRadius: '4px', padding: '1px 6px', fontSize: '0.62rem', fontWeight: 800 }}>NEW</span>
+                            )}
                           </div>
-                          {msg.status === 'New' && (
-                            <span style={{ background: '#ef4444', color: '#ffffff', borderRadius: '4px', padding: '1px 6px', fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase' }}>
-                              NEW
-                            </span>
+                          <div style={{ fontSize: '0.82rem', color: '#9e4895', fontWeight: 700, marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            <a href={`mailto:${msg.email}`} style={{ color: '#9e4895', textDecoration: 'none' }}>
+                              {msg.email}
+                            </a>
+                          </div>
+                          {msg.phone && (
+                            <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <Phone size={12} color="#94a3b8" /> {msg.phone}
+                            </div>
                           )}
                         </div>
                       </div>
                     </td>
 
-                    <td style={{ padding: '16px 14px', fontSize: '0.88rem', fontWeight: 600, color: '#0f172a' }}>
-                      <a href={`mailto:${msg.email}`} style={{ color: '#9e4895', textDecoration: 'none' }}>
-                        {msg.email}
-                      </a>
-                    </td>
-
-                    <td style={{ padding: '16px 14px', fontSize: '0.85rem', color: '#64748b', whiteSpace: 'nowrap' }}>
-                      {msg.phone || '-'}
-                    </td>
-
-                    <td style={{ padding: '16px 14px', fontSize: '0.88rem', fontWeight: 700, color: '#0f172a', maxWidth: '160px' }}>
-                      {msg.subject || 'General Enquiry'}
-                    </td>
-
-                    <td style={{ padding: '16px 14px', fontSize: '0.85rem', color: '#475569', maxWidth: '280px', lineHeight: 1.5 }}>
-                      <div style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    <td style={{ padding: '16px', wordBreak: 'break-word' }}>
+                      <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.9rem', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {msg.subject || 'General Enquiry'}
+                      </div>
+                      <div style={{ fontSize: '0.84rem', color: '#475569', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5 }}>
                         {msg.message}
                       </div>
                     </td>
 
-                    <td style={{ padding: '16px 14px', fontSize: '0.82rem', color: '#64748b', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '16px', fontSize: '0.82rem', color: '#64748b', whiteSpace: 'nowrap' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <Clock size={13} color="#94a3b8" />
                         {new Date(msg.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                       </div>
                     </td>
 
-                    <td style={{ padding: '16px 14px' }}>
+                    <td style={{ padding: '16px' }}>
                       <select
                         value={msg.status}
                         onChange={(e) => handleStatusChange(msg.id, e.target.value)}
@@ -326,6 +335,7 @@ const ContactMessagesPage = () => {
                           border: '1.5px solid #e2e8f0',
                           background: msg.status === 'New' ? '#fef2f2' : msg.status === 'Replied' ? '#f0fdf4' : '#eff6ff',
                           color: msg.status === 'New' ? '#ef4444' : msg.status === 'Replied' ? '#16a34a' : '#3b82f6',
+                          width: '100%',
                         }}
                       >
                         <option value="New">New</option>
@@ -334,8 +344,8 @@ const ContactMessagesPage = () => {
                       </select>
                     </td>
 
-                    <td style={{ padding: '16px 14px', textAlign: 'right' }}>
-                      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', alignItems: 'center' }}>
+                    <td style={{ padding: '16px', textAlign: 'right' }}>
+                      <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end', alignItems: 'center' }}>
                         <button
                           type="button"
                           onClick={() => {
@@ -386,7 +396,7 @@ const ContactMessagesPage = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="9" style={{ textAlign: 'center', padding: '3rem', color: '#94a3b8' }}>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '3rem', color: '#94a3b8' }}>
                     No contact messages found matching search criteria.
                   </td>
                 </tr>
