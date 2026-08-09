@@ -8,7 +8,7 @@ import HeroSection from './pages/HeroSection';
 import Certifications from './pages/Certifications';
 import AboutSectionPage from './pages/AboutSectionPage';
 import DivisionsPageManager from './pages/DivisionsPageManager';
-import MissionVisionPage from './pages/MissionVisionPage';
+import MdMessageManager from './pages/MdMessageManager';
 import ReviewsPage from './pages/ReviewsPage';
 import EventsPage from './pages/EventsPage';
 import ContactMessagesPage from './pages/ContactMessagesPage';
@@ -20,7 +20,7 @@ import MilestonesPage from './pages/MilestonesPage';
 
 const VALID_TABS = [
   'dashboard', 'products', 'departments', 'about-us', 'milestones', 'divisions', 'divisions-page', 'hero-section', 'certifications', 'about-section',
-  'mission-vision', 'reviews', 'events', 'careers',
+  'md-message', 'mission-vision', 'reviews', 'events', 'careers',
   'contact-messages', 'newsletter-subscribers', 'home-video'
 ];
 
@@ -86,7 +86,7 @@ const MainLayout = () => {
           {(activeTab === 'divisions-page' || activeTab === 'divisions') && <DivisionsPageManager />}
           {activeTab === 'departments' && <DepartmentsPage />}
           {activeTab === 'milestones' && <MilestonesPage />}
-          {activeTab === 'mission-vision' && <MissionVisionPage />}
+          {(activeTab === 'md-message' || activeTab === 'mission-vision') && <MdMessageManager />}
           {activeTab === 'reviews' && <ReviewsPage />}
           {activeTab === 'events' && <EventsPage />}
           {activeTab === 'careers' && <CareersPage />}

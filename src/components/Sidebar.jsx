@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Compass, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag, Layers } from 'lucide-react';
+import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag, Layers, UserCheck } from 'lucide-react';
 
-const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'mission-vision', 'reviews', 'home-video'];
+const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'md-message', 'reviews', 'home-video'];
 const aboutSubTabs = ['about-us', 'about-section', 'milestones'];
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
@@ -163,13 +163,13 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                 </button>
               </li>
 
-              <li className={`menu-item ${activeTab === 'mission-vision' ? 'active' : ''}`}>
+              <li className={`menu-item ${activeTab === 'md-message' || activeTab === 'mission-vision' ? 'active' : ''}`}>
                 <button
-                  onClick={() => setActiveTab('mission-vision')}
+                  onClick={() => setActiveTab('md-message')}
                   style={{ padding: '8px 12px', fontSize: '0.88rem' }}
                 >
-                  <Compass size={16} />
-                  <span>Mission & Vision</span>
+                  <UserCheck size={16} />
+                  <span>MD's Message</span>
                 </button>
               </li>
 
