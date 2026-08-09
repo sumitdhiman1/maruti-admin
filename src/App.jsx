@@ -20,11 +20,12 @@ import DepartmentsPage from './pages/DepartmentsPage';
 import VideoManagementPage from './pages/VideoManagementPage';
 import MilestonesPage from './pages/MilestonesPage';
 import DbDumpPage from './pages/DbDumpPage';
+import WhatsAppSettingsPage from './pages/WhatsAppSettingsPage';
 
 const VALID_TABS = [
   'dashboard', 'products', 'departments', 'about-us', 'milestones', 'divisions', 'divisions-page', 'hero-section', 'certifications', 'about-section',
   'md-message', 'mission-vision', 'reviews', 'events', 'careers',
-  'contact-messages', 'newsletter-subscribers', 'home-video', 'dump-db'
+  'contact-messages', 'newsletter-subscribers', 'home-video', 'whatsapp', 'dump-db'
 ];
 
 const getTabFromURL = () => {
@@ -98,6 +99,7 @@ const MainLayout = () => {
           {activeTab === 'contact-messages' && <ContactMessagesPage />}
           {activeTab === 'newsletter-subscribers' && <NewsletterPage />}
           {activeTab === 'home-video' && <VideoManagementPage />}
+          {activeTab === 'whatsapp' && <WhatsAppSettingsPage />}
           {activeTab === 'dump-db' && <DbDumpPage />}
         </main>
       </div>

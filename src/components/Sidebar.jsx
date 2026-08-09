@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag, Layers, UserCheck, Database } from 'lucide-react';
+import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag, Layers, UserCheck, Database, MessageCircle } from 'lucide-react';
 
 const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'md-message', 'reviews', 'home-video'];
 const aboutSubTabs = ['about-us', 'milestones'];
@@ -249,6 +249,20 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           >
             <Mail size={20} />
             <span>Newsletter</span>
+          </button>
+        </li>
+
+        {/* WhatsApp Integration */}
+        <li className={`menu-item ${activeTab === 'whatsapp' ? 'active' : ''}`}>
+          <button
+            onClick={() => {
+              setActiveTab('whatsapp');
+              setHomeOpen(false);
+              setAboutOpen(false);
+            }}
+          >
+            <MessageCircle size={20} color="#25D366" />
+            <span>WhatsApp Chat</span>
           </button>
         </li>
 
