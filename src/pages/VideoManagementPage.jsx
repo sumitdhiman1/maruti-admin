@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
-import { Video, UploadCloud, Save, RotateCcw, CheckCircle, Eye, EyeOff, Play, Film, Sparkles, ExternalLink } from 'lucide-react';
+import MediaUploadField from '../components/MediaUploadField';
+import { Save, RotateCcw, CheckCircle, Eye, EyeOff, Play, Film, Loader2 } from 'lucide-react';
 
 const VideoManagementPage = () => {
   const [videoData, setVideoData] = useState({
@@ -13,7 +14,6 @@ const VideoManagementPage = () => {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
   const showToast = (msg) => {
@@ -40,7 +40,7 @@ const VideoManagementPage = () => {
   };
 
   const handleSave = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     try {
       setSaving(true);
       const res = await api.put('/home-video', videoData);
@@ -54,44 +54,17 @@ const VideoManagementPage = () => {
   };
 
   const handleReset = async () => {
-    if (window.confirm('Reset Home Page Video to standard default Vimeo overview video?')) {
+    if (window.confirm('Reset Home Page Video to standard default overview video?')) {
       try {
         setSaving(true);
         const res = await api.post('/home-video/reset');
         setVideoData(res.data);
-        showToast('Reset to default Maruti Pharma Vimeo video! 🔄');
+        showToast('Reset to default Maruti Pharma video! 🔄');
       } catch (err) {
         alert('Failed to reset video settings');
       } finally {
         setSaving(false);
       }
-    }
-  };
-
-  const handleVideoFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setUploading(true);
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const res = await api.post('/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      if (res.data?.imageUrl) {
-        setVideoData(prev => ({
-          ...prev,
-          videoUrl: res.data.imageUrl,
-          videoType: 'mp4',
-        }));
-        showToast('Video file uploaded successfully! 📹');
-      }
-    } catch (err) {
-      alert('Upload failed: ' + (err.response?.data?.message || err.message));
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -121,10 +94,10 @@ const VideoManagementPage = () => {
   };
 
   const embedUrl = getEmbedUrl(videoData.videoUrl);
-  const isMp4 = videoData.videoType === 'mp4' || embedUrl.endsWith('.mp4') || embedUrl.includes('/video/upload/');
+  const isMp4 = videoData.videoType === 'mp4' || embedUrl.endsWith('.mp4') || embedUrl.includes('/video/upload/') || embedUrl.includes('/uploads/');
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       {/* Toast Notification */}
       {toastMessage && (
         <div style={{
@@ -142,11 +115,29 @@ const VideoManagementPage = () => {
         </div>
       )}
 
+      {/* Full Page Processing Overlay when Saving */}
+      {saving && (
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 99,
+          background: 'rgba(255, 255, 255, 0.85)', backdropFilter: 'blur(4px)',
+          borderRadius: '16px', display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: '14px',
+        }}>
+          <Loader2 size={42} color="#c054c2" style={{ animation: 'spinSlow 1s linear infinite' }} />
+          <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
+            Saving Video Settings &amp; Updating Live Website...
+          </div>
+          <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
+            Please wait a moment while the database updates.
+          </div>
+        </div>
+      )}
+
       {/* Page Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <div>
           <div style={{ fontSize: '0.85rem', color: '#c054c2', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-            Home Page Management
+            Home Section Management
           </div>
           <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0a192f', marginTop: '2px' }}>
             Fullwidth Video Player Settings
@@ -154,11 +145,12 @@ const VideoManagementPage = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button className="btn btn-secondary" onClick={handleReset} title="Reset to standard Vimeo video">
+          <button className="btn btn-secondary" onClick={handleReset} title="Reset to standard video" disabled={saving}>
             <RotateCcw size={16} /> Reset Default
           </button>
-          <button className="btn btn-primary" onClick={handleSave} disabled={saving}>
-            <Save size={18} /> {saving ? 'Saving...' : 'Save Changes'}
+          <button className="btn btn-primary" onClick={handleSave} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {saving ? <Loader2 size={18} style={{ animation: 'spinSlow 1s linear infinite' }} /> : <Save size={18} />}
+            {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </div>
@@ -197,7 +189,7 @@ const VideoManagementPage = () => {
               <label className="form-label">Video Title / Name</label>
               <input
                 className="form-control"
-                value={videoData.title}
+                value={videoData.title || ''}
                 onChange={e => setVideoData({ ...videoData, title: e.target.value })}
                 placeholder="e.g. Maruti Pharma State-of-the-Art Facility Overview"
               />
@@ -209,52 +201,32 @@ const VideoManagementPage = () => {
               <textarea
                 className="form-control"
                 rows={2}
-                value={videoData.subtitle}
+                value={videoData.subtitle || ''}
                 onChange={e => setVideoData({ ...videoData, subtitle: e.target.value })}
                 placeholder="Brief description of video content..."
               />
             </div>
 
-            {/* Video Source Type */}
-            <div className="form-group">
-              <label className="form-label">Video Source Type</label>
-              <select
-                className="form-control"
-                value={videoData.videoType}
-                onChange={e => setVideoData({ ...videoData, videoType: e.target.value })}
-              >
-                <option value="vimeo">Vimeo Video (e.g. https://vimeo.com/... or player.vimeo.com/...)</option>
-                <option value="youtube">YouTube Video (e.g. https://youtube.com/watch?v=... or embed/...)</option>
-                <option value="mp4">Direct MP4 / Cloudinary Video URL</option>
-              </select>
-            </div>
+            {/* Common Department-Style Drag & Drop Media Upload Section */}
+            <MediaUploadField
+              label="Upload Video / Media File (Drag & Drop or Click)"
+              value={videoData.videoUrl || ''}
+              onChange={(url) => setVideoData(prev => ({
+                ...prev,
+                videoUrl: url || '',
+                videoType: url && (url.endsWith('.mp4') || url.includes('/video/upload/') || url.includes('/uploads/')) ? 'mp4' : 'vimeo',
+              }))}
+              placeholder="Drag & Drop MP4 Video or Media File Here (or click to browse)"
+            />
 
-            {/* Video URL Input */}
-            <div className="form-group">
-              <label className="form-label">Video URL or Embed Link *</label>
-              <input
-                className="form-control"
-                value={videoData.videoUrl}
-                onChange={e => setVideoData({ ...videoData, videoUrl: e.target.value })}
-                placeholder="e.g. https://player.vimeo.com/video/131188216 or https://www.youtube.com/watch?v=..."
-                required
-              />
-            </div>
-
-            {/* Upload Video Button */}
-            <div className="form-group" style={{ background: '#faf5ff', padding: '1rem', borderRadius: '12px', border: '1px border #e9d5ff' }}>
-              <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>
-                Upload Custom MP4 Video File (Cloudinary)
-              </label>
-              <label className="btn btn-secondary" style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                <UploadCloud size={18} color="#c054c2" />
-                {uploading ? 'Uploading Video File...' : 'Choose MP4 Video File'}
-                <input type="file" accept="video/mp4,video/*" onChange={handleVideoFileUpload} style={{ display: 'none' }} />
-              </label>
-            </div>
-
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={saving}>
-              <Save size={18} /> {saving ? 'Saving...' : 'Save Video Configuration'}
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: '100%', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+              disabled={saving}
+            >
+              {saving ? <Loader2 size={18} style={{ animation: 'spinSlow 1s linear infinite' }} /> : <Save size={18} />}
+              {saving ? 'Saving & Updating Database...' : 'Save Video Configuration'}
             </button>
           </form>
         </div>
@@ -266,7 +238,7 @@ const VideoManagementPage = () => {
               <Play size={20} color="#c054c2" /> Live Player Preview
             </h3>
             <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
-              {videoData.videoType.toUpperCase()} Format
+              Media Player Preview
             </span>
           </div>
 
@@ -303,9 +275,6 @@ const VideoManagementPage = () => {
               </div>
               <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px' }}>
                 {videoData.subtitle || 'No description provided'}
-              </div>
-              <div style={{ fontSize: '0.78rem', color: '#c054c2', fontWeight: 600, marginTop: '8px', wordBreak: 'break-all' }}>
-                URL: {videoData.videoUrl}
               </div>
             </div>
           </div>

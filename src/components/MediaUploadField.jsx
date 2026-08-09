@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { UploadCloud, Check, X, Loader2 } from 'lucide-react';
 import api from '../services/api';
 
-const ImageUploadField = ({ label, value, onChange, placeholder = "Drag & Drop Image Here or click to browse" }) => {
+const MediaUploadField = ({ label, value, onChange, placeholder = "Drag & Drop Video or Image File Here (or click to browse)", accept = "video/*,image/*" }) => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -40,6 +40,7 @@ const ImageUploadField = ({ label, value, onChange, placeholder = "Drag & Drop I
         reader.readAsDataURL(file);
       }
     } catch (err) {
+      console.error('File upload failed:', err);
       const reader = new FileReader();
       reader.onload = (event) => onChange(event.target.result);
       reader.readAsDataURL(file);
@@ -81,6 +82,8 @@ const ImageUploadField = ({ label, value, onChange, placeholder = "Drag & Drop I
     !hasError
   );
 
+  const isVideo = hasValidValue && (value.endsWith('.mp4') || value.endsWith('.webm') || value.endsWith('.mov') || value.includes('/video/upload/') || value.includes('/uploads/') || value.startsWith('data:video'));
+
   return (
     <div style={{ marginBottom: '1rem' }}>
       {label && (
@@ -108,7 +111,9 @@ const ImageUploadField = ({ label, value, onChange, placeholder = "Drag & Drop I
           <div style={{ padding: '0.8rem 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', width: '100%', maxWidth: '340px', margin: '0 auto' }}>
             <Loader2 size={32} color="#c054c2" style={{ animation: 'spinSlow 1s linear infinite' }} />
             <div style={{ fontSize: '0.9rem', color: '#c054c2', fontWeight: 800 }}>
-              Uploading &amp; Processing Image: {uploadProgress}%
+              {uploadProgress < 100
+                ? `Uploading Media: ${uploadProgress}%`
+                : `100% - Processing & Finalizing Media on Server...`}
             </div>
             <div style={{ width: '100%', height: '8px', background: '#e2e8f0', borderRadius: '100px', overflow: 'hidden' }}>
               <div style={{ width: `${uploadProgress}%`, height: '100%', background: 'linear-gradient(90deg, #c054c2, #8b5cf6)', transition: 'width 0.2s ease-out' }}></div>
@@ -116,20 +121,36 @@ const ImageUploadField = ({ label, value, onChange, placeholder = "Drag & Drop I
           </div>
         ) : hasValidValue ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ position: 'relative', display: 'inline-block' }}>
-              <img
-                src={value}
-                alt="Uploaded Preview"
-                onError={() => setHasError(true)}
-                style={{
-                  maxHeight: '140px',
-                  maxWidth: '100%',
-                  objectFit: 'cover',
-                  borderRadius: '10px',
-                  border: '2px solid #22c55e',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                }}
-              />
+            <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%' }}>
+              {isVideo ? (
+                <video
+                  src={value}
+                  controls
+                  onError={() => setHasError(true)}
+                  style={{
+                    maxHeight: '160px',
+                    maxWidth: '100%',
+                    borderRadius: '10px',
+                    border: '2px solid #22c55e',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                  }}
+                />
+              ) : (
+                <img
+                  src={value}
+                  alt="Media Preview"
+                  onError={() => setHasError(true)}
+                  style={{
+                    maxHeight: '140px',
+                    maxWidth: '100%',
+                    objectFit: 'cover',
+                    borderRadius: '10px',
+                    border: '2px solid #22c55e',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+                  }}
+                />
+              )}
+
               <button
                 type="button"
                 onClick={(e) => {
@@ -154,14 +175,14 @@ const ImageUploadField = ({ label, value, onChange, placeholder = "Drag & Drop I
                   zIndex: 10,
                   boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
                 }}
-                title="Remove Image"
+                title="Remove Media"
               >
                 <X size={14} />
               </button>
             </div>
 
             <div style={{ fontSize: '0.82rem', color: '#15803d', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px' }}>
-              <Check size={16} /> Image Ready
+              <Check size={16} /> Media File Ready
             </div>
             <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
               Click or Drag &amp; Drop a new file to replace
@@ -176,14 +197,14 @@ const ImageUploadField = ({ label, value, onChange, placeholder = "Drag & Drop I
               {placeholder}
             </div>
             <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-              Supports PNG, JPG, WEBP formats (click or drag &amp; drop)
+              Supports MP4, WEBM, MOV, PNG, JPG (click or drag &amp; drop)
             </div>
           </div>
         )}
 
         <input
           type="file"
-          accept="image/*"
+          accept={accept}
           onChange={handleFileChange}
           disabled={uploading}
           style={{
@@ -207,4 +228,4 @@ const ImageUploadField = ({ label, value, onChange, placeholder = "Drag & Drop I
   );
 };
 
-export default ImageUploadField;
+export default MediaUploadField;
