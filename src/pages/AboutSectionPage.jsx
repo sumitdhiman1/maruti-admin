@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import ImageUploadField from '../components/ImageUploadField';
-import { Save, CheckCircle, Info, Sparkles, Award, Users, TrendingUp } from 'lucide-react';
+import { Save, CheckCircle, Info, Sparkles, Award, Users, TrendingUp, Send } from 'lucide-react';
 
 const AboutSectionPage = () => {
   const [formData, setFormData] = useState({
@@ -65,6 +65,14 @@ const AboutSectionPage = () => {
     leadershipDesc1: 'The leadership team at Maruti Pharma Pvt. Ltd. is committed to achieving our vision of delivering high-quality healthcare solutions through innovation, advanced technology, and excellence in pharmaceutical practices.',
     leadershipDesc2: 'Our Board of Directors provides strategic direction, strong governance, and visionary leadership to ensure sustainable growth while strengthening our commitment to serving the healthcare needs of the nation.',
     leadershipDesc3: 'With a focus on quality, innovation, integrity, and patient-centric healthcare, the Maruti leadership team continues to inspire progress and build a healthier future.',
+
+    // Connect CTA
+    ctaTitle: 'Join Us in Building a Healthier Tomorrow',
+    ctaDesc: 'Whether you\'re a healthcare professional, a partner, or someone looking for career opportunities — we\'d love to connect.',
+    ctaBtn1Text: 'Contact Us',
+    ctaBtn1Url: '/contact',
+    ctaBtn2Text: 'Explore Careers',
+    ctaBtn2Url: '/careers',
   });
 
   const [saving, setSaving] = useState(false);
@@ -420,6 +428,47 @@ const AboutSectionPage = () => {
           <div className="form-group">
             <label className="form-label">Leadership Paragraph 3</label>
             <textarea className="form-control" rows={2} name="leadershipDesc3" value={formData.leadershipDesc3} onChange={handleChange} />
+          </div>
+        </div>
+
+        {/* 6. Connect CTA Section Controls */}
+        <div className="card" style={{ margin: 0 }}>
+          <div className="card-header">
+            <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Send size={20} color="#c054c2" /> Connect CTA Section Controls
+            </h3>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">CTA Section Title</label>
+            <input className="form-control" name="ctaTitle" value={formData.ctaTitle} onChange={handleChange} />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">CTA Description</label>
+            <textarea className="form-control" rows={2} name="ctaDesc" value={formData.ctaDesc} onChange={handleChange} />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
+            <div className="form-group">
+              <label className="form-label">Button 1 Label</label>
+              <input className="form-control" name="ctaBtn1Text" value={formData.ctaBtn1Text} onChange={handleChange} />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Button 1 URL Link</label>
+              <input className="form-control" name="ctaBtn1Url" value={formData.ctaBtn1Url} onChange={handleChange} />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Button 2 Label</label>
+              <input className="form-control" name="ctaBtn2Text" value={formData.ctaBtn2Text} onChange={handleChange} />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Button 2 URL Link</label>
+              <input className="form-control" name="ctaBtn2Url" value={formData.ctaBtn2Url} onChange={handleChange} />
+            </div>
           </div>
         </div>
 
