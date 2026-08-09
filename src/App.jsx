@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import ProductsPage from './pages/ProductsPage';
 import HeroSection from './pages/HeroSection';
 import Certifications from './pages/Certifications';
 import AboutSectionPage from './pages/AboutSectionPage';
@@ -80,6 +81,7 @@ const MainLayout = () => {
         <Navbar />
         <main className="page-wrapper">
           {activeTab === 'dashboard' && <Dashboard />}
+          {activeTab === 'products' && <ProductsPage />}
           {activeTab === 'hero-section' && <HeroSection />}
           {activeTab === 'certifications' && <Certifications />}
           {(activeTab === 'about-section' || activeTab === 'about-us') && <AboutSectionPage />}
