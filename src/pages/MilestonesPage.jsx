@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import MilestoneModal from '../components/MilestoneModal';
-import { Flag, Plus, Edit3, Trash2, RotateCcw, CheckCircle, Search, Calendar, Sparkles, GripVertical } from 'lucide-react';
+import { Flag, Plus, Edit3, Trash2, CheckCircle, Search, Calendar, Sparkles, GripVertical } from 'lucide-react';
 
 const MilestonesPage = () => {
   const [items, setItems] = useState([]);
@@ -10,7 +10,7 @@ const MilestonesPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
-  const [seeding, setSeeding] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState(null);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -63,18 +63,47 @@ const MilestonesPage = () => {
     }
   };
 
-  const handleSeedDocx = async () => {
-    if (window.confirm('Reset and reload all 14 milestones from MILESTONES.docx file?')) {
-      try {
-        setSeeding(true);
-        const res = await api.post('/milestones/seed');
-        showToast(`Loaded ${res.data.count || 14} Milestones from Docx file! 🎉`);
-        fetchMilestones();
-      } catch (err) {
-        alert('Failed to seed milestones');
-      } finally {
-        setSeeding(false);
+  // HTML5 Drag & Drop Sorting
+  const handleDragStart = (e, index) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = async (e, dropTargetIndex) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === dropTargetIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    const updatedList = [...items];
+    const [movedItem] = updatedList.splice(draggedIndex, 1);
+    updatedList.splice(dropTargetIndex, 0, movedItem);
+
+    // Reassign sortOrder sequentially
+    const reorderedList = updatedList.map((item, idx) => ({
+      ...item,
+      sortOrder: idx + 1,
+    }));
+
+    setItems(reorderedList);
+    setDraggedIndex(null);
+
+    // Save reordered list to backend database
+    try {
+      for (let i = 0; i < reorderedList.length; i++) {
+        await api.put(`/milestones/${reorderedList[i].id}`, {
+          sortOrder: reorderedList[i].sortOrder,
+        });
       }
+      showToast('Milestones re-ordered successfully via Drag & Drop! 🎯');
+    } catch (err) {
+      console.error('Failed to save reordered milestones:', err);
     }
   };
 
@@ -148,8 +177,8 @@ const MilestonesPage = () => {
             <Calendar size={24} color="#22c55e" />
           </div>
           <div>
-            <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700 }}>Timeline Range</div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>2009 &ndash; 2019+</div>
+            <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700 }}>Timeline Order</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#0f172a' }}>Drag &amp; Drop Ready</div>
           </div>
         </div>
 
@@ -180,12 +209,12 @@ const MilestonesPage = () => {
           </div>
 
           <div style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>
-            Showing {filteredItems.length} of {items.length} milestones
+            💡 Drag &amp; drop any row using the grip handle to re-order sequence
           </div>
         </div>
       </div>
 
-      {/* Visual Timeline Cards Grid */}
+      {/* Visual Drag & Drop Timeline Cards List */}
       {loading ? (
         <div className="card" style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
           Loading company milestones...
@@ -199,22 +228,28 @@ const MilestonesPage = () => {
           {filteredItems.map((item, index) => (
             <div
               key={item.id}
+              draggable={true}
+              onDragStart={(e) => handleDragStart(e, index)}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, index)}
               style={{
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
+                background: draggedIndex === index ? '#faf5ff' : '#ffffff',
+                border: draggedIndex === index ? '2px dashed #c054c2' : '1px solid #e2e8f0',
                 borderRadius: '16px',
                 padding: '1.2rem 1.5rem',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 gap: '1.5rem',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                boxShadow: draggedIndex === index ? '0 10px 25px rgba(192, 84, 194, 0.2)' : '0 4px 12px rgba(0,0,0,0.03)',
                 transition: 'all 0.2s ease',
+                cursor: 'grab',
+                opacity: draggedIndex === index ? 0.6 : 1,
               }}
             >
               {/* Drag Grip Handle */}
-              <div style={{ color: '#cbd5e1', cursor: 'grab' }}>
-                <GripVertical size={20} />
+              <div style={{ color: '#94a3b8', cursor: 'grab', padding: '4px' }} title="Drag to reorder">
+                <GripVertical size={22} />
               </div>
 
               {/* Year & Badge Block */}

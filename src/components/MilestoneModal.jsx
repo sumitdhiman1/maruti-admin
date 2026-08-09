@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Check, Flag, Sparkles } from 'lucide-react';
+import { X, Check, Flag } from 'lucide-react';
 
 const MilestoneModal = ({ isOpen, onClose, onSave, item }) => {
   const [formData, setFormData] = useState({
@@ -7,7 +7,6 @@ const MilestoneModal = ({ isOpen, onClose, onSave, item }) => {
     date: '',
     description: '',
     badgeText: '',
-    sortOrder: 1,
     status: 'Active',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,7 +18,6 @@ const MilestoneModal = ({ isOpen, onClose, onSave, item }) => {
         date: item.date || '',
         description: item.description || '',
         badgeText: item.badgeText || (item.year ? item.year.slice(-2) : ''),
-        sortOrder: item.sortOrder || 1,
         status: item.status || 'Active',
       });
     } else {
@@ -28,7 +26,6 @@ const MilestoneModal = ({ isOpen, onClose, onSave, item }) => {
         date: '',
         description: '',
         badgeText: '',
-        sortOrder: 1,
         status: 'Active',
       });
     }
@@ -132,29 +129,17 @@ const MilestoneModal = ({ isOpen, onClose, onSave, item }) => {
               />
             </div>
 
-            {/* Sort Order & Status Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label">Sort Order Index</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={formData.sortOrder}
-                  onChange={e => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 1 })}
-                />
-              </div>
-
-              <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label">Status</label>
-                <select
-                  className="form-control"
-                  value={formData.status}
-                  onChange={e => setFormData({ ...formData, status: e.target.value })}
-                >
-                  <option value="Active">Active (Visible on website)</option>
-                  <option value="Disabled">Disabled (Hidden)</option>
-                </select>
-              </div>
+            {/* Status Select */}
+            <div className="form-group" style={{ margin: 0 }}>
+              <label className="form-label">Status</label>
+              <select
+                className="form-control"
+                value={formData.status}
+                onChange={e => setFormData({ ...formData, status: e.target.value })}
+              >
+                <option value="Active">Active (Visible on website)</option>
+                <option value="Disabled">Disabled (Hidden)</option>
+              </select>
             </div>
 
             {/* Badge Live Preview Card */}

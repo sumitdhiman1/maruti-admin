@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Layers, Compass, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag } from 'lucide-react';
+import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Compass, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag } from 'lucide-react';
 
 const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'mission-vision', 'reviews', 'home-video'];
+const aboutSubTabs = ['about-us', 'about-section', 'milestones'];
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const isHomeSubTab = homeSubTabs.includes(activeTab);
-  const [homeOpen, setHomeOpen] = useState(isHomeSubTab);
+  const isAboutSubTab = aboutSubTabs.includes(activeTab);
 
-  // Auto-collapse Home Section dropdown when selecting menu items outside Home Section
+  const [homeOpen, setHomeOpen] = useState(isHomeSubTab);
+  const [aboutOpen, setAboutOpen] = useState(isAboutSubTab);
+
   useEffect(() => {
-    if (isHomeSubTab) {
-      setHomeOpen(true);
-    } else {
-      setHomeOpen(false);
-    }
+    if (isHomeSubTab) setHomeOpen(true);
+    if (isAboutSubTab) setAboutOpen(true);
   }, [activeTab]);
 
   return (
@@ -30,6 +30,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
             onClick={() => {
               setActiveTab('dashboard');
               setHomeOpen(false);
+              setAboutOpen(false);
             }}
           >
             <LayoutDashboard size={20} />
@@ -43,6 +44,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
             onClick={() => {
               setActiveTab('products');
               setHomeOpen(false);
+              setAboutOpen(false);
             }}
           >
             <Package size={20} />
@@ -56,6 +58,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
             onClick={() => {
               setActiveTab('departments');
               setHomeOpen(false);
+              setAboutOpen(false);
             }}
           >
             <Building2 size={20} />
@@ -63,30 +66,42 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           </button>
         </li>
 
-        {/* About Us Page Menu */}
-        <li className={`menu-item ${activeTab === 'about-us' || activeTab === 'about-section' ? 'active' : ''}`}>
+        {/* About Us Dropdown Menu */}
+        <li className="menu-item">
           <button
-            onClick={() => {
-              setActiveTab('about-us');
-              setHomeOpen(false);
-            }}
+            onClick={() => setAboutOpen(!aboutOpen)}
+            style={{ justifyContent: 'space-between' }}
           >
-            <Info size={20} />
-            <span>About Us Page</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Info size={20} />
+              <span>About Us</span>
+            </div>
+            {aboutOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
-        </li>
 
-        {/* Milestones Menu */}
-        <li className={`menu-item ${activeTab === 'milestones' ? 'active' : ''}`}>
-          <button
-            onClick={() => {
-              setActiveTab('milestones');
-              setHomeOpen(false);
-            }}
-          >
-            <Flag size={20} />
-            <span>Milestones</span>
-          </button>
+          {aboutOpen && (
+            <ul style={{ listStyle: 'none', paddingLeft: '1.5rem', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <li className={`menu-item ${activeTab === 'about-us' || activeTab === 'about-section' ? 'active' : ''}`}>
+                <button
+                  onClick={() => setActiveTab('about-us')}
+                  style={{ padding: '8px 12px', fontSize: '0.88rem' }}
+                >
+                  <Info size={16} />
+                  <span>About Page Content</span>
+                </button>
+              </li>
+
+              <li className={`menu-item ${activeTab === 'milestones' ? 'active' : ''}`}>
+                <button
+                  onClick={() => setActiveTab('milestones')}
+                  style={{ padding: '8px 12px', fontSize: '0.88rem' }}
+                >
+                  <Flag size={16} />
+                  <span>Milestones</span>
+                </button>
+              </li>
+            </ul>
+          )}
         </li>
 
         {/* Home Section Dropdown */}
@@ -167,12 +182,13 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           )}
         </li>
 
-        {/* Standalone Events Menu Item (Outside Home Section) */}
+        {/* Standalone Events Menu Item */}
         <li className={`menu-item ${activeTab === 'events' ? 'active' : ''}`}>
           <button
             onClick={() => {
               setActiveTab('events');
               setHomeOpen(false);
+              setAboutOpen(false);
             }}
           >
             <Calendar size={20} />
@@ -186,6 +202,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
             onClick={() => {
               setActiveTab('careers');
               setHomeOpen(false);
+              setAboutOpen(false);
             }}
           >
             <Briefcase size={20} />
@@ -199,6 +216,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
             onClick={() => {
               setActiveTab('contact-messages');
               setHomeOpen(false);
+              setAboutOpen(false);
             }}
           >
             <MessageSquare size={20} />
@@ -212,6 +230,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
             onClick={() => {
               setActiveTab('newsletter-subscribers');
               setHomeOpen(false);
+              setAboutOpen(false);
             }}
           >
             <Mail size={20} />
