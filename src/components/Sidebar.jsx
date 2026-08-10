@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag, Layers, UserCheck, Database, MessageCircle } from 'lucide-react';
+import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag, Layers, UserCheck, Database, MessageCircle, Share2 } from 'lucide-react';
 
 const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'md-message', 'reviews', 'home-video'];
 const aboutSubTabs = ['about-us', 'milestones'];
@@ -263,6 +263,20 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           >
             <MessageCircle size={20} color="#25D366" />
             <span>WhatsApp Chat</span>
+          </button>
+        </li>
+
+        {/* Social Links */}
+        <li className={`menu-item ${activeTab === 'social-links' ? 'active' : ''}`}>
+          <button
+            onClick={() => {
+              setActiveTab('social-links');
+              setHomeOpen(false);
+              setAboutOpen(false);
+            }}
+          >
+            <Share2 size={20} color="#9e4895" />
+            <span>Social Links</span>
           </button>
         </li>
 

@@ -21,11 +21,13 @@ import VideoManagementPage from './pages/VideoManagementPage';
 import MilestonesPage from './pages/MilestonesPage';
 import DbDumpPage from './pages/DbDumpPage';
 import WhatsAppSettingsPage from './pages/WhatsAppSettingsPage';
+import SocialSettingsPage from './pages/SocialSettingsPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 const VALID_TABS = [
   'dashboard', 'products', 'departments', 'about-us', 'milestones', 'divisions', 'divisions-page', 'hero-section', 'certifications', 'about-section',
   'md-message', 'mission-vision', 'reviews', 'events', 'careers',
-  'contact-messages', 'newsletter-subscribers', 'home-video', 'whatsapp', 'dump-db'
+  'contact-messages', 'newsletter-subscribers', 'home-video', 'whatsapp', 'social-links', 'dump-db'
 ];
 
 const getTabFromURL = () => {
@@ -100,7 +102,9 @@ const MainLayout = () => {
           {activeTab === 'newsletter-subscribers' && <NewsletterPage />}
           {activeTab === 'home-video' && <VideoManagementPage />}
           {activeTab === 'whatsapp' && <WhatsAppSettingsPage />}
+          {activeTab === 'social-links' && <SocialSettingsPage />}
           {activeTab === 'dump-db' && <DbDumpPage />}
+          {!VALID_TABS.includes(activeTab) && <NotFoundPage onGoDashboard={() => changeTab('dashboard')} />}
         </main>
       </div>
     </div>
