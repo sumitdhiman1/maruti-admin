@@ -18,7 +18,7 @@ const Login = () => {
   };
 
   return (
-    <div className="login-screen">
+    <div className="login-container">
       <div className="login-box">
         <div className="login-brand">MARUTI</div>
         <h2 className="login-title">Admin Portal</h2>
