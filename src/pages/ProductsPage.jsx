@@ -482,6 +482,7 @@ const ProductsPage = () => {
         onSave={handleSave}
         item={editingItem}
         existingCategories={Array.from(new Set(products.map(p => p.category).filter(Boolean)))}
+        existingDivisions={Array.from(new Set(products.map(p => p.division).filter(Boolean)))}
       />
 
       {/* Image Lightbox Popup Modal */}

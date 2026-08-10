@@ -10,7 +10,9 @@ const DEFAULT_CATEGORIES = [
   'ANTI ULCERANT', 'PAIN MANAGEMENT / ANALGESICS'
 ];
 
-const ProductModal = ({ isOpen, onClose, onSave, item, existingCategories = [] }) => {
+const DEFAULT_DIVISIONS = ['Derma A', 'Derma B', 'Elzac', 'Evara'];
+
+const ProductModal = ({ isOpen, onClose, onSave, item, existingCategories = [], existingDivisions = [] }) => {
   const [formData, setFormData] = useState({
     division: 'Derma A',
     category: 'General',
@@ -106,26 +108,45 @@ const ProductModal = ({ isOpen, onClose, onSave, item, existingCategories = [] }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.category || !formData.category.trim()) {
+      alert('Category name is required');
+      return;
+    }
+
+    if (!formData.division || !formData.division.trim()) {
+      alert('Division name is required');
+      return;
+    }
+
     if (!formData.name.trim()) {
       alert('Product name is required');
       return;
     }
+
     setIsSubmitting(true);
     try {
-      await onSave(formData);
+      await onSave({
+        ...formData,
+        category: formData.category.trim(),
+        division: formData.division.trim(),
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Combine dynamic categories from admin listing page + defaults
-  const allCategories = Array.from(new Set([...existingCategories, ...DEFAULT_CATEGORIES].filter(Boolean)));
-  const categoryOptions = allCategories.map(cat => ({ value: cat, label: cat }));
+  // Combine dynamic categories from existing products + defaults + saved custom categories
+  const customSavedCats = JSON.parse(localStorage.getItem('maruti_custom_categories') || '[]');
+  const allCategories = Array.from(new Set([...existingCategories, ...DEFAULT_CATEGORIES, ...customSavedCats].filter(Boolean))).sort();
+  const categoryOptions = allCategories.map((cat) => ({ value: cat, label: cat }));
 
   const filteredCategoryOptions = categoryOptions.filter((opt) =>
     opt.label.toLowerCase().includes(catSearch.toLowerCase()) ||
     opt.value.toLowerCase().includes(catSearch.toLowerCase())
   );
+
+  const allDivisions = Array.from(new Set([...existingDivisions, ...DEFAULT_DIVISIONS].filter(Boolean)));
 
   return (
     <div
@@ -208,14 +229,13 @@ const ProductModal = ({ isOpen, onClose, onSave, item, existingCategories = [] }
                 required
                 style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
               >
-                <option value="Derma A">Derma A</option>
-                <option value="Derma B">Derma B</option>
-                <option value="Elzac">Elzac</option>
-                <option value="Evara">Evara</option>
+                {allDivisions.map((div) => (
+                  <option key={div} value={div}>{div}</option>
+                ))}
               </select>
             </div>
 
-            {/* Custom Interactive Scrollable Category Dropdown */}
+            {/* Custom Searchable Interactive Category Dropdown */}
             <div ref={dropdownRef} style={{ position: 'relative' }}>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
                 Category *
@@ -284,7 +304,7 @@ const ProductModal = ({ isOpen, onClose, onSave, item, existingCategories = [] }
                   <div
                     style={{
                       maxHeight: '190px',
-                      overflowY: 'scroll',
+                      overflowY: 'auto',
                       scrollbarWidth: 'thin',
                       scrollbarColor: '#c054c2 #f1f5f9',
                       display: 'flex',
@@ -292,40 +312,56 @@ const ProductModal = ({ isOpen, onClose, onSave, item, existingCategories = [] }
                       gap: '2px',
                     }}
                   >
-                    {filteredCategoryOptions.map((opt) => {
-                      const isSelected = formData.category === opt.value;
-                      return (
-                        <div
-                          key={opt.value}
-                          onClick={() => {
-                            setFormData((prev) => ({ ...prev, category: opt.value }));
-                            setIsCatOpen(false);
-                          }}
-                          style={{
-                            padding: '8px 12px',
-                            borderRadius: '6px',
-                            fontSize: '0.85rem',
-                            fontWeight: isSelected ? 700 : 500,
-                            color: isSelected ? '#9e4895' : '#334155',
-                            background: isSelected ? '#faf5ff' : 'transparent',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            transition: 'background 0.15s ease',
-                          }}
-                          onMouseEnter={(e) => {
-                            if (!isSelected) e.currentTarget.style.background = '#f8fafc';
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!isSelected) e.currentTarget.style.background = 'transparent';
-                          }}
-                        >
-                          <span>{opt.label}</span>
-                          {isSelected && <Check size={16} color="#9e4895" />}
-                        </div>
-                      );
-                    })}
+                    {filteredCategoryOptions.length > 0 ? (
+                      filteredCategoryOptions.map((opt) => {
+                        const isSelected = formData.category.toLowerCase() === opt.value.toLowerCase();
+                        return (
+                          <div
+                            key={opt.value}
+                            onClick={() => {
+                              setFormData((prev) => ({ ...prev, category: opt.value }));
+                              setIsCatOpen(false);
+                            }}
+                            style={{
+                              padding: '8px 12px',
+                              borderRadius: '6px',
+                              fontSize: '0.85rem',
+                              fontWeight: isSelected ? 700 : 500,
+                              color: isSelected ? '#9e4895' : '#334155',
+                              background: isSelected ? '#faf5ff' : 'transparent',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              transition: 'background 0.15s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!isSelected) e.currentTarget.style.background = '#f8fafc';
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!isSelected) e.currentTarget.style.background = 'transparent';
+                            }}
+                          >
+                            <span>{opt.label}</span>
+                            {isSelected && <Check size={16} color="#9e4895" />}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div
+                        style={{
+                          padding: '12px',
+                          textAlign: 'center',
+                          fontSize: '0.84rem',
+                          color: '#64748b',
+                          fontWeight: 600,
+                          background: '#f8fafc',
+                          borderRadius: '8px',
+                        }}
+                      >
+                        No matching category found
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag, Layers, UserCheck, Database, MessageCircle, Share2, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag, Layers, UserCheck, Database, MessageCircle, Share2, Sparkles, Tag } from 'lucide-react';
 
 const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'md-message', 'reviews', 'home-video'];
 const aboutSubTabs = ['about-us', 'milestones'];
@@ -49,6 +49,20 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           >
             <Package size={20} />
             <span>Products</span>
+          </button>
+        </li>
+
+        {/* Product Categories */}
+        <li className={`menu-item ${activeTab === 'product-categories' || activeTab === 'categories' ? 'active' : ''}`}>
+          <button
+            onClick={() => {
+              setActiveTab('product-categories');
+              setHomeOpen(false);
+              setAboutOpen(false);
+            }}
+          >
+            <Tag size={20} color="#9e4895" />
+            <span>Product Categories</span>
           </button>
         </li>
 

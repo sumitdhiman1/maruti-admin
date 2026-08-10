@@ -24,9 +24,10 @@ import WhatsAppSettingsPage from './pages/WhatsAppSettingsPage';
 import SocialSettingsPage from './pages/SocialSettingsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProductBrandsPage from './pages/ProductBrandsPage';
+import ProductCategoriesPage from './pages/ProductCategoriesPage';
 
 const VALID_TABS = [
-  'dashboard', 'products', 'product-brands', 'departments', 'about-us', 'milestones', 'divisions', 'divisions-page', 'hero-section', 'certifications', 'about-section',
+  'dashboard', 'products', 'product-categories', 'categories', 'product-brands', 'departments', 'about-us', 'milestones', 'divisions', 'divisions-page', 'hero-section', 'certifications', 'about-section',
   'md-message', 'mission-vision', 'reviews', 'events', 'careers',
   'contact-messages', 'newsletter-subscribers', 'home-video', 'whatsapp', 'social-links', 'dump-db'
 ];
@@ -34,6 +35,8 @@ const VALID_TABS = [
 const TAB_ALIASES = {
   'brands': 'product-brands',
   'product-brand': 'product-brands',
+  'categories': 'product-categories',
+  'category': 'product-categories',
   'division': 'divisions-page',
   'divisions': 'divisions-page',
   'about': 'about-us',
@@ -103,6 +106,9 @@ const MainLayout = () => {
         <main className="page-wrapper">
           {activeTab === 'dashboard' && <Dashboard />}
           {activeTab === 'products' && <ProductsPage />}
+          {(activeTab === 'product-categories' || activeTab === 'categories') && (
+            <ProductCategoriesPage setActiveTab={changeTab} />
+          )}
           {activeTab === 'product-brands' && <ProductBrandsPage />}
           {activeTab === 'hero-section' && <HeroSection />}
           {activeTab === 'certifications' && <Certifications />}
