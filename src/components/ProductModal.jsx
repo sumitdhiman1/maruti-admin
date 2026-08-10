@@ -2,14 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Check, Package, UploadCloud, Loader2, ChevronDown, Search } from 'lucide-react';
 import api from '../services/api';
 
-const DEFAULT_CATEGORIES = [
-  'General', 'ANTIFUNGALS', 'ANTIBACTERIALS', 'CORTICOSTEROIDS', 'ANTI-ACNE',
-  'ANTIALLERGICS', 'EMOLLEINTS AND SKIN NOURISHERS / MOISTURIZERS', 'SUNSCREENS',
-  'ANTI-DANDRUFF AND HAIR CARE', 'CLEANSING LOTIONS / SOAPS', 'IMMUNOMODULATORS',
-  'SCABICIDES / PEDICULICIDES', 'ANTI PERSPIRENT', 'DEPIGMENTING AGENT',
-  'ANTI ULCERANT', 'PAIN MANAGEMENT / ANALGESICS'
-];
-
 const DEFAULT_DIVISIONS = ['Derma A', 'Derma B', 'Elzac', 'Evara'];
 
 const ProductModal = ({ isOpen, onClose, onSave, item, existingCategories = [], existingDivisions = [] }) => {
@@ -27,16 +19,23 @@ const ProductModal = ({ isOpen, onClose, onSave, item, existingCategories = [], 
   const [uploadingImage, setUploadingImage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // DB-fetched categories
+  const [dbCategories, setDbCategories] = useState([]);
+
   // Custom Category Dropdown State
   const [isCatOpen, setIsCatOpen] = useState(false);
   const [catSearch, setCatSearch] = useState('');
   const dropdownRef = useRef(null);
 
+  // Fetch categories from DB whenever modal opens
   useEffect(() => {
     if (isOpen) {
       setIsSubmitting(false);
       setIsCatOpen(false);
       setCatSearch('');
+      api.get('/product-categories')
+        .then((res) => setDbCategories((res.data || []).map((c) => c.name)))
+        .catch(() => setDbCategories([]));
     }
   }, [isOpen]);
 
@@ -136,9 +135,10 @@ const ProductModal = ({ isOpen, onClose, onSave, item, existingCategories = [], 
     }
   };
 
-  // Combine dynamic categories from existing products + defaults + saved custom categories
-  const customSavedCats = JSON.parse(localStorage.getItem('maruti_custom_categories') || '[]');
-  const allCategories = Array.from(new Set([...existingCategories, ...DEFAULT_CATEGORIES, ...customSavedCats].filter(Boolean))).sort();
+  // Use DB-fetched categories, fall back to passed existingCategories prop
+  const allCategories = Array.from(new Set(
+    [...(dbCategories.length > 0 ? dbCategories : existingCategories)].filter(Boolean)
+  )).sort();
   const categoryOptions = allCategories.map((cat) => ({ value: cat, label: cat }));
 
   const filteredCategoryOptions = categoryOptions.filter((opt) =>
