@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import ImageUploadField from '../components/ImageUploadField';
 import DivisionItemModal from '../components/DivisionItemModal';
-import { Layers, Plus, Edit3, Trash2, Save, CheckCircle, Search, GripVertical, Sparkles, Send } from 'lucide-react';
+import { Layers, Plus, Edit3, Trash2, Save, CheckCircle, Search, GripVertical, Sparkles, Send, Award } from 'lucide-react';
 
-const DivisionsPageManager = () => {
+const DivisionsPageManager = ({ setActiveTab }) => {
   // 1. Division Page Settings
   const [pageData, setPageData] = useState({
     bannerTitle: 'Our Strategic Divisions',
@@ -14,6 +14,22 @@ const DivisionsPageManager = () => {
     stat2Number: '15+', stat2Label: 'Years of Excellence',
     stat3Number: '20+', stat3Label: 'Countries Served',
     stat4Number: 'WHO-GMP', stat4Label: 'Certified',
+
+    feature1Icon: '/assets/images/feature-icon1.jpeg',
+    feature1Title: 'WHO-GMP',
+    feature1Highlight: 'Certified',
+    feature1Desc: 'Manufactured under internationally recognized quality standards to ensure safety and efficacy testing.',
+
+    feature2Icon: '/assets/images/feature-icon2.jpeg',
+    feature2Title: 'ISO 9001:2008',
+    feature2Highlight: 'Certified',
+    feature2Desc: 'We follow globally accepted quality management systems for consistent quality and improvement.',
+
+    feature3Icon: '/assets/images/feature-icon3.jpeg',
+    feature3Title: 'ISO 14001:2004',
+    feature3Highlight: 'Certified',
+    feature3Desc: 'Every product is developed with safety, reliability and quality at the core of everything we do.',
+
     sectionSubhead: 'Our Divisions',
     sectionTitle: 'Built for every healthcare need',
     ctaSubtitle: 'Science for Health',
@@ -275,6 +291,95 @@ const DivisionsPageManager = () => {
               <input className="form-control" name="stat4Number" value={pageData.stat4Number || ''} onChange={handlePageChange} />
               <label style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '4px' }}>Stat 4 Label</label>
               <input className="form-control" name="stat4Label" value={pageData.stat4Label || ''} onChange={handlePageChange} />
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 1.5: Divisions Quality Standards & Badges Section */}
+        <div className="card" style={{ margin: '0 0 1.5rem 0' }}>
+          <div className="card-header">
+            <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Award size={20} color="#c054c2" /> Quality Standards &amp; Badges (Exclusive for Divisions Page)
+            </h3>
+            <button type="submit" className="btn btn-primary" disabled={savingPage}>
+              <Save size={16} /> {savingPage ? 'Saving...' : 'Save Quality Cards'}
+            </button>
+          </div>
+          <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '1.25rem' }}>
+            Control logo icons, titles, highlight words, and descriptions for the 3 quality cards displayed below the hero section on the Divisions page.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+            {/* Card 1 */}
+            <div style={{ background: '#faf6fa', border: '1px solid #f3d4f5', padding: '1.25rem', borderRadius: '14px' }}>
+              <div style={{ fontWeight: 800, color: '#0f172a', marginBottom: '1rem', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Sparkles size={16} color="#c054c2" /> Quality Card 1
+              </div>
+              <ImageUploadField
+                label="Card 1 Logo Seal Icon"
+                value={pageData.feature1Icon || '/assets/images/feature-icon1.jpeg'}
+                onChange={(url) => setPageData(prev => ({ ...prev, feature1Icon: url || '' }))}
+              />
+              <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                <label className="form-label">Title</label>
+                <input className="form-control" name="feature1Title" value={pageData.feature1Title || ''} onChange={handlePageChange} placeholder="e.g. WHO-GMP" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Highlight Word (Italic Accent)</label>
+                <input className="form-control" name="feature1Highlight" value={pageData.feature1Highlight || ''} onChange={handlePageChange} placeholder="e.g. Certified" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea className="form-control" rows={3} name="feature1Desc" value={pageData.feature1Desc || ''} onChange={handlePageChange} placeholder="Card description..." />
+              </div>
+            </div>
+
+            {/* Card 2 */}
+            <div style={{ background: '#faf6fa', border: '1px solid #f3d4f5', padding: '1.25rem', borderRadius: '14px' }}>
+              <div style={{ fontWeight: 800, color: '#0f172a', marginBottom: '1rem', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Sparkles size={16} color="#c054c2" /> Quality Card 2
+              </div>
+              <ImageUploadField
+                label="Card 2 Logo Seal Icon"
+                value={pageData.feature2Icon || '/assets/images/feature-icon2.jpeg'}
+                onChange={(url) => setPageData(prev => ({ ...prev, feature2Icon: url || '' }))}
+              />
+              <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                <label className="form-label">Title</label>
+                <input className="form-control" name="feature2Title" value={pageData.feature2Title || ''} onChange={handlePageChange} placeholder="e.g. ISO 9001:2008" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Highlight Word (Italic Accent)</label>
+                <input className="form-control" name="feature2Highlight" value={pageData.feature2Highlight || ''} onChange={handlePageChange} placeholder="e.g. Certified" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea className="form-control" rows={3} name="feature2Desc" value={pageData.feature2Desc || ''} onChange={handlePageChange} placeholder="Card description..." />
+              </div>
+            </div>
+
+            {/* Card 3 */}
+            <div style={{ background: '#faf6fa', border: '1px solid #f3d4f5', padding: '1.25rem', borderRadius: '14px' }}>
+              <div style={{ fontWeight: 800, color: '#0f172a', marginBottom: '1rem', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Sparkles size={16} color="#c054c2" /> Quality Card 3
+              </div>
+              <ImageUploadField
+                label="Card 3 Logo Seal Icon"
+                value={pageData.feature3Icon || '/assets/images/feature-icon3.jpeg'}
+                onChange={(url) => setPageData(prev => ({ ...prev, feature3Icon: url || '' }))}
+              />
+              <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                <label className="form-label">Title</label>
+                <input className="form-control" name="feature3Title" value={pageData.feature3Title || ''} onChange={handlePageChange} placeholder="e.g. ISO 14001:2004" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Highlight Word (Italic Accent)</label>
+                <input className="form-control" name="feature3Highlight" value={pageData.feature3Highlight || ''} onChange={handlePageChange} placeholder="e.g. Certified" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <textarea className="form-control" rows={3} name="feature3Desc" value={pageData.feature3Desc || ''} onChange={handlePageChange} placeholder="Card description..." />
+              </div>
             </div>
           </div>
         </div>

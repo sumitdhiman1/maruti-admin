@@ -108,7 +108,7 @@ const MainLayout = () => {
           {activeTab === 'certifications' && <Certifications />}
           {activeTab === 'about-section' && <HomeAboutSectionPage />}
           {activeTab === 'about-us' && <AboutSectionPage />}
-          {(activeTab === 'divisions-page' || activeTab === 'divisions') && <DivisionsPageManager />}
+          {(activeTab === 'divisions-page' || activeTab === 'divisions') && <DivisionsPageManager setActiveTab={changeTab} />}
           {activeTab === 'departments' && <DepartmentsPage />}
           {activeTab === 'milestones' && <MilestonesPage />}
           {(activeTab === 'md-message' || activeTab === 'mission-vision') && <MdMessageManager />}
