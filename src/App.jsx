@@ -23,22 +23,38 @@ import DbDumpPage from './pages/DbDumpPage';
 import WhatsAppSettingsPage from './pages/WhatsAppSettingsPage';
 import SocialSettingsPage from './pages/SocialSettingsPage';
 import NotFoundPage from './pages/NotFoundPage';
+import ProductBrandsPage from './pages/ProductBrandsPage';
 
 const VALID_TABS = [
-  'dashboard', 'products', 'departments', 'about-us', 'milestones', 'divisions', 'divisions-page', 'hero-section', 'certifications', 'about-section',
+  'dashboard', 'products', 'product-brands', 'departments', 'about-us', 'milestones', 'divisions', 'divisions-page', 'hero-section', 'certifications', 'about-section',
   'md-message', 'mission-vision', 'reviews', 'events', 'careers',
   'contact-messages', 'newsletter-subscribers', 'home-video', 'whatsapp', 'social-links', 'dump-db'
 ];
 
+const TAB_ALIASES = {
+  'brands': 'product-brands',
+  'product-brand': 'product-brands',
+  'division': 'divisions-page',
+  'divisions': 'divisions-page',
+  'about': 'about-us',
+  'contact': 'contact-messages',
+  'newsletter': 'newsletter-subscribers',
+  'video': 'home-video',
+  'social': 'social-links',
+};
+
 const getTabFromURL = () => {
-  const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
-  if (path === '' || path === 'login') {
-    return localStorage.getItem('maruti_admin_tab') || 'dashboard';
-  }
-  if (VALID_TABS.includes(path)) {
+  const rawPath = window.location.pathname.replace(/^\/+|\/+$/g, '');
+  const path = TAB_ALIASES[rawPath] || rawPath;
+  if (path !== '' && path !== 'login' && VALID_TABS.includes(path)) {
     return path;
   }
-  return localStorage.getItem('maruti_admin_tab') || 'dashboard';
+  const saved = localStorage.getItem('maruti_admin_tab');
+  const resolvedSaved = TAB_ALIASES[saved] || saved;
+  if (resolvedSaved && VALID_TABS.includes(resolvedSaved)) {
+    return resolvedSaved;
+  }
+  return 'dashboard';
 };
 
 const MainLayout = () => {
@@ -87,6 +103,7 @@ const MainLayout = () => {
         <main className="page-wrapper">
           {activeTab === 'dashboard' && <Dashboard />}
           {activeTab === 'products' && <ProductsPage />}
+          {activeTab === 'product-brands' && <ProductBrandsPage />}
           {activeTab === 'hero-section' && <HeroSection />}
           {activeTab === 'certifications' && <Certifications />}
           {activeTab === 'about-section' && <HomeAboutSectionPage />}
