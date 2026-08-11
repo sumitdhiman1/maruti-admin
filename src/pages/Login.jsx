@@ -20,7 +20,13 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-box">
-        <div className="login-brand">MARUTI</div>
+        <div style={{ textAlign: 'center', marginBottom: '8px', background: 'none' }}>
+          <img
+            src="/assets/images/Maruti-Pharma-Logo.png"
+            alt="Maruti Pharma Pvt. Ltd."
+            style={{ maxWidth: '160px', height: 'auto', display: 'block', margin: '0 auto' }}
+          />
+        </div>
         <h2 className="login-title">Admin Portal</h2>
         <p className="login-subtitle">Sign in with your dealership credentials</p>
 
