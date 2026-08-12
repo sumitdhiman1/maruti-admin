@@ -28,6 +28,7 @@ const ProductsPage = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
   const [seeding, setSeeding] = useState(false);
+  const [migrating, setMigrating] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
 
   const showToast = (msg) => {
@@ -96,7 +97,22 @@ const ProductsPage = () => {
     }
   };
 
-  const divisionsList = ['All', 'Derma A', 'Derma B', 'Elzac', 'Evara'];
+  const handleMigrateDerma = async () => {
+    if (window.confirm('This will rename all existing "Derma A" and "Derma B" products in the database to just "Derma". Continue?')) {
+      try {
+        setMigrating(true);
+        const res = await api.post('/products/migrate-derma');
+        showToast(res.data.message || 'Migration complete! ✅');
+        fetchProducts();
+      } catch (err) {
+        alert('Migration failed: ' + (err.response?.data?.message || err.message));
+      } finally {
+        setMigrating(false);
+      }
+    }
+  };
+
+  const divisionsList = ['All', 'Derma', 'Elzac', 'Evara'];
   
   // Dynamic categories based on division selection
   const categoriesList = ['All', ...Array.from(new Set(
@@ -180,6 +196,18 @@ const ProductsPage = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button
+            onClick={handleMigrateDerma}
+            disabled={migrating}
+            title="Rename all Derma A / Derma B → Derma in the database"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '8px 16px', borderRadius: '8px', border: '1.5px solid #f59e0b',
+              background: '#fffbeb', color: '#92400e', fontWeight: 700, fontSize: '0.88rem', cursor: 'pointer',
+            }}
+          >
+            {migrating ? '⏳ Migrating...' : '🔀 Merge Derma A+B → Derma'}
+          </button>
           <button
             className="btn btn-primary"
             onClick={() => {

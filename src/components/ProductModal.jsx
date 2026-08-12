@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Check, Package, UploadCloud, Loader2, ChevronDown, Search } from 'lucide-react';
 import api from '../services/api';
 
-const DEFAULT_DIVISIONS = ['Derma A', 'Derma B', 'Elzac', 'Evara'];
+const DEFAULT_DIVISIONS = ['Derma', 'Elzac', 'Evara'];
 
 const ProductModal = ({ isOpen, onClose, onSave, item, existingCategories = [], existingDivisions = [] }) => {
   const [formData, setFormData] = useState({
-    division: 'Derma A',
+    division: 'Derma',
     category: 'General',
     name: '',
     composition: '',
@@ -42,7 +42,7 @@ const ProductModal = ({ isOpen, onClose, onSave, item, existingCategories = [], 
   useEffect(() => {
     if (item) {
       setFormData({
-        division: item.division || 'Derma A',
+        division: item.division || 'Derma',
         category: item.category || 'General',
         name: item.name || '',
         composition: item.composition || '',
@@ -53,7 +53,7 @@ const ProductModal = ({ isOpen, onClose, onSave, item, existingCategories = [], 
       });
     } else {
       setFormData({
-        division: 'Derma A',
+        division: 'Derma',
         category: 'General',
         name: '',
         composition: '',

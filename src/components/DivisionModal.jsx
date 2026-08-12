@@ -2,10 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import api from '../services/api';
 import { X, UploadCloud, CheckCircle, Package, Plus, Layers, Tag } from 'lucide-react';
 
-const DEFAULT_DIVISIONS = ['Derma A', 'Derma B', 'Evara', 'Elzac'];
+const DEFAULT_DIVISIONS = ['Derma', 'Evara', 'Elzac'];
 
 const emptyForm = {
-  division: 'Derma A',
+  division: 'Derma',
   customDivision: '',
   isCustomDivision: false,
   category: 'CORTICOSTEROIDS',
@@ -51,7 +51,7 @@ const DivisionModal = ({ isOpen, onClose, onSave, item = null, existingProducts 
       const isCustomCat = !categoryOptions.includes(item.category);
 
       setFormData({
-        division: isCustomDiv ? '__CUSTOM_DIV__' : item.division || 'Derma A',
+        division: isCustomDiv ? '__CUSTOM_DIV__' : item.division || 'Derma',
         customDivision: isCustomDiv ? item.division : '',
         isCustomDivision: isCustomDiv,
         category: isCustomCat ? '__CUSTOM_CAT__' : item.category || 'General',
@@ -67,7 +67,7 @@ const DivisionModal = ({ isOpen, onClose, onSave, item = null, existingProducts 
     } else {
       setFormData({
         ...emptyForm,
-        division: divisionOptions[0] || 'Derma A',
+        division: divisionOptions[0] || 'Derma',
         category: categoryOptions[0] || 'General',
       });
     }

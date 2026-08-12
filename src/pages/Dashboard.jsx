@@ -187,7 +187,7 @@ const Dashboard = () => {
               {stats.divisionsCount}
             </h2>
             <span style={{ fontSize: '0.78rem', color: '#7e22ce', fontWeight: 600 }}>
-              Derma A, B, Elzac, Evara
+              Derma, Elzac, Evara
             </span>
           </div>
           <div style={{ padding: '14px', borderRadius: '14px', background: '#f3e8ff', color: '#7e22ce', border: '1px solid #e9d5ff' }}>
@@ -329,18 +329,10 @@ const Dashboard = () => {
           <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: '#faf5ff', borderRadius: '12px', border: '1px solid #f3e8ff' }}>
               <div>
-                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.95rem' }}>Derma A Division</div>
-                <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Prescription Dermatology &amp; Skin Care</div>
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.95rem' }}>Derma Division</div>
+                <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Prescription Dermatology, Skin Care & Specialty Formulations</div>
               </div>
-              <span className="badge badge-purple">70+ SKUs</span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: '#faf5ff', borderRadius: '12px', border: '1px solid #f3e8ff' }}>
-              <div>
-                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.95rem' }}>Derma B Division</div>
-                <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Specialty Formulations &amp; Cleansers</div>
-              </div>
-              <span className="badge badge-purple">50+ SKUs</span>
+              <span className="badge badge-purple">120+ SKUs</span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: '#faf5ff', borderRadius: '12px', border: '1px solid #f3e8ff' }}>

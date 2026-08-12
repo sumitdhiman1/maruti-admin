@@ -16,6 +16,7 @@ const DivisionsPage = () => {
   const [editingItem, setEditingItem] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
   const [seeding, setSeeding] = useState(false);
+  const [migrating, setMigrating] = useState(false);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -40,7 +41,7 @@ const DivisionsPage = () => {
 
   // Dynamic Divisions list based on database products and defaults
   const dynamicDivisions = useMemo(() => {
-    const defaultDivs = ['Derma A', 'Derma B', 'Evara', 'Elzac'];
+    const defaultDivs = ['Derma', 'Evara', 'Elzac'];
     const dbDivs = products.map((p) => p.division).filter(Boolean);
     const combined = Array.from(new Set([...defaultDivs, ...dbDivs])).sort();
     return ['All', ...combined];
@@ -137,6 +138,21 @@ const DivisionsPage = () => {
     }
   };
 
+  const handleMigrateDerma = async () => {
+    if (window.confirm('This will rename all existing "Derma A" and "Derma B" products in the database to just "Derma". Continue?')) {
+      try {
+        setMigrating(true);
+        const res = await api.post('/products/migrate-derma');
+        showToast(res.data.message || 'Migration complete! ✅');
+        fetchProducts();
+      } catch (error) {
+        alert('Migration failed: ' + (error.response?.data?.message || error.message));
+      } finally {
+        setMigrating(false);
+      }
+    }
+  };
+
   return (
     <div>
       {/* Toast Notification */}
@@ -178,6 +194,9 @@ const DivisionsPage = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '12px' }}>
+          <button className="btn btn-secondary" onClick={handleMigrateDerma} disabled={migrating} title="Rename all Derma A / Derma B → Derma in the database" style={{ borderColor: '#f59e0b', color: '#92400e', background: '#fffbeb' }}>
+            {migrating ? 'Migrating...' : '🔀 Merge Derma A+B → Derma'}
+          </button>
           <button className="btn btn-secondary" onClick={handleSeedFromExcel} disabled={seeding} title="Reset & Re-load all 155 Excel products">
             <RotateCcw size={16} color="#c054c2" /> {seeding ? 'Seeding...' : 'Import 155 Excel Products'}
           </button>
@@ -308,9 +327,9 @@ const DivisionsPage = () => {
                     <td>
                       <span
                         style={{
-                          background: p.division === 'Derma A' || p.division === 'Derma B' ? '#faf5ff' : p.division === 'Evara' ? '#ecfeff' : '#e0e7ff',
-                          color: p.division === 'Derma A' || p.division === 'Derma B' ? '#a855f7' : p.division === 'Evara' ? '#0891b2' : '#4f46e5',
-                          border: `1px solid ${p.division === 'Derma A' || p.division === 'Derma B' ? '#e9d5ff' : p.division === 'Evara' ? '#cff4fc' : '#c7d2fe'}`,
+                          background: p.division === 'Derma' ? '#faf5ff' : p.division === 'Evara' ? '#ecfeff' : '#e0e7ff',
+                          color: p.division === 'Derma' ? '#a855f7' : p.division === 'Evara' ? '#0891b2' : '#4f46e5',
+                          border: `1px solid ${p.division === 'Derma' ? '#e9d5ff' : p.division === 'Evara' ? '#cff4fc' : '#c7d2fe'}`,
                           padding: '4px 10px',
                           borderRadius: '8px',
                           fontWeight: 700,

@@ -434,7 +434,7 @@ const ProductCategoriesPage = ({ setActiveTab }) => {
 
                 <button
                   onClick={() => {
-                    setProductModalPreFill({ category: cat.name, division: cat.divisions[0] || 'Derma A' });
+                    setProductModalPreFill({ category: cat.name, division: cat.divisions[0] || 'Derma' });
                     setIsProductModalOpen(true);
                   }}
                   style={{ background: '#faf5ff', border: '1px solid #f3e8ff', borderRadius: '8px', padding: '5px 12px', color: '#9e4895', fontSize: '0.78rem', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
