@@ -37,6 +37,18 @@ const DivisionsPageManager = ({ setActiveTab }) => {
     ctaDesc: 'Advanced formulations spanning prescription and OTC therapies across dermatology, everyday wellness, and specialized therapeutic categories. Built on clinical evidence, delivered with precision.',
     ctaBtn1Text: 'View all Products', ctaBtn1Url: '/products',
     ctaBtn2Text: 'Contact Us', ctaBtn2Url: '/contact',
+
+    // Gallery Section defaults
+    gallerySubhead: 'Our Products',
+    galleryTitle: 'Where science meets precision.',
+    galleryImg1: '/assets/images/product-lab-microscope.jpg',
+    galleryImg1Alt: 'Lab Science',
+    galleryImg2: '/assets/images/product-pharmacy-shelf.jpg',
+    galleryImg2Alt: 'Pharmacy Research',
+    galleryImg3: '/assets/images/product-doctor-consultation.jpg',
+    galleryImg3Alt: 'Doctor Consultation',
+    galleryImg4: '/assets/images/product-prescription-clipboard.jpg',
+    galleryImg4Alt: 'Prescription Precision',
   });
 
   // 2. Division Items List
@@ -426,6 +438,59 @@ const DivisionsPageManager = ({ setActiveTab }) => {
               <label className="form-label">Btn 2 Link</label>
               <input className="form-control" name="ctaBtn2Url" value={pageData.ctaBtn2Url || ''} onChange={handlePageChange} />
             </div>
+          </div>
+        </div>
+
+        {/* SECTION 3: "Where Science Meets Precision" Gallery */}
+        <div className="card" style={{ margin: '0 0 1.5rem 0' }}>
+          <div className="card-header">
+            <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Sparkles size={20} color="#c054c2" /> "Where Science Meets Precision" Gallery Section
+            </h3>
+            <button type="submit" className="btn btn-primary" disabled={savingPage}>
+              <Save size={16} /> {savingPage ? 'Saving...' : 'Save Gallery'}
+            </button>
+          </div>
+          <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '1.25rem' }}>
+            Control the heading and 4 gallery images shown in the products showcase grid on the Divisions page.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+            <div className="form-group">
+              <label className="form-label">Gallery Subheading</label>
+              <input className="form-control" name="gallerySubhead" value={pageData.gallerySubhead || ''} onChange={handlePageChange} placeholder="e.g. Our Products" />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Gallery Title (shown as heading)</label>
+              <input className="form-control" name="galleryTitle" value={pageData.galleryTitle || ''} onChange={handlePageChange} placeholder="e.g. Where science meets precision." />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
+            {[1, 2, 3, 4].map((n) => (
+              <div key={n} style={{ background: '#faf6fa', border: '1px solid #f3d4f5', padding: '1.25rem', borderRadius: '14px' }}>
+                <div style={{ fontWeight: 800, color: '#0f172a', marginBottom: '0.75rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Sparkles size={14} color="#c054c2" /> Gallery Image {n}
+                </div>
+                <ImageUploadField
+                  label={`Image ${n}`}
+                  value={pageData[`galleryImg${n}`] || ''}
+                  onChange={(url) => setPageData(prev => ({ ...prev, [`galleryImg${n}`]: url || '' }))}
+                  placeholder={`Upload Gallery Image ${n}`}
+                />
+                <div className="form-group" style={{ marginTop: '0.5rem' }}>
+                  <label className="form-label" style={{ fontSize: '0.78rem' }}>Alt Text (Image {n})</label>
+                  <input
+                    className="form-control"
+                    name={`galleryImg${n}Alt`}
+                    value={pageData[`galleryImg${n}Alt`] || ''}
+                    onChange={handlePageChange}
+                    placeholder={`e.g. Lab Research ${n}`}
+                    style={{ fontSize: '0.82rem' }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </form>
