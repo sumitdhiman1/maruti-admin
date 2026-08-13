@@ -46,10 +46,10 @@ const HomeTherapeuticDivisionsPage = () => {
   const fetchDivisionItems = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/division-items');
+      const res = await api.get('/home-therapeutic-cards');
       setItems(res.data || []);
     } catch (err) {
-      console.error('Error fetching division items:', err);
+      console.error('Error fetching home therapeutic cards:', err);
     } finally {
       setLoading(false);
     }
@@ -79,29 +79,29 @@ const HomeTherapeuticDivisionsPage = () => {
   const handleSaveItem = async (formData) => {
     try {
       if (editingItem) {
-        await api.put(`/division-items/${editingItem.id}`, formData);
-        showToast('Division card updated! 🎉');
+        await api.put(`/home-therapeutic-cards/${editingItem.id}`, formData);
+        showToast('Therapeutic card updated! 🎉');
       } else {
         const nextOrder = items.length > 0 ? Math.max(...items.map((m) => m.sortOrder || 1)) + 1 : 1;
-        await api.post('/division-items', { ...formData, sortOrder: nextOrder });
-        showToast('New Division card added! 🎉');
+        await api.post('/home-therapeutic-cards', { ...formData, sortOrder: nextOrder });
+        showToast('New Therapeutic card added! 🎉');
       }
       setIsModalOpen(false);
       setEditingItem(null);
       fetchDivisionItems();
     } catch (err) {
-      alert('Failed to save division card: ' + (err.response?.data?.message || err.message));
+      alert('Failed to save therapeutic card: ' + (err.response?.data?.message || err.message));
     }
   };
 
   const handleDeleteItem = async (id, name) => {
-    if (window.confirm(`Delete division card "${name}"?`)) {
+    if (window.confirm(`Delete therapeutic card "${name}"?`)) {
       try {
-        await api.delete(`/division-items/${id}`);
-        showToast('Division card deleted! 🗑️');
+        await api.delete(`/home-therapeutic-cards/${id}`);
+        showToast('Therapeutic card deleted! 🗑️');
         fetchDivisionItems();
       } catch (err) {
-        alert('Failed to delete division item');
+        alert('Failed to delete therapeutic card');
       }
     }
   };
@@ -138,13 +138,13 @@ const HomeTherapeuticDivisionsPage = () => {
 
     try {
       for (let i = 0; i < reorderedList.length; i++) {
-        await api.put(`/division-items/${reorderedList[i].id}`, {
+        await api.put(`/home-therapeutic-cards/${reorderedList[i].id}`, {
           sortOrder: reorderedList[i].sortOrder,
         });
       }
-      showToast('Divisions reordered via Drag & Drop! 🎯');
+      showToast('Therapeutic cards reordered via Drag & Drop! 🎯');
     } catch (err) {
-      console.error('Failed to save reordered divisions:', err);
+      console.error('Failed to save reordered cards:', err);
     }
   };
 
