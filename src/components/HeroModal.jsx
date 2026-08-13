@@ -161,10 +161,10 @@ const HeroModal = ({ isOpen, onClose, onSave, banner = null }) => {
               placeholder="Drag & drop banner image here or browse"
             />
 
-            {bannerType === 'FestivalEvent' ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {bannerType === 'FestivalEvent' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', background: '#faf5ff', padding: '1.2rem', borderRadius: '14px', border: '1px solid #f3e8ff' }}>
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label">Festival / Event Name *</label>
+                  <label className="form-label" style={{ fontWeight: 800, color: '#0f172a' }}>Festival / Event Name *</label>
                   <input
                     type="text"
                     name="eventName"
@@ -178,8 +178,8 @@ const HeroModal = ({ isOpen, onClose, onSave, banner = null }) => {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div className="form-group" style={{ margin: 0 }}>
-                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Calendar size={16} color="#c054c2" /> Event Start Date
+                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700 }}>
+                      <Calendar size={16} color="#c054c2" /> Event Start Date *
                     </label>
                     <input
                       type="date"
@@ -192,8 +192,8 @@ const HeroModal = ({ isOpen, onClose, onSave, banner = null }) => {
                   </div>
 
                   <div className="form-group" style={{ margin: 0 }}>
-                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Calendar size={16} color="#c054c2" /> Event End Date
+                    <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700 }}>
+                      <Calendar size={16} color="#c054c2" /> Event End Date *
                     </label>
                     <input
                       type="date"
@@ -206,89 +206,90 @@ const HeroModal = ({ isOpen, onClose, onSave, banner = null }) => {
                   </div>
                 </div>
               </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            )}
+
+            {/* Common Banner Fields (Title, Subtitle, Buttons) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div className="form-group" style={{ margin: 0 }}>
+                <label className="form-label">Top Badge Text</label>
+                <input
+                  type="text"
+                  name="badgeText"
+                  className="form-control"
+                  placeholder="e.g. • WHO-GMP & ISO 9001:2015 Certified"
+                  value={formData.badgeText}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group" style={{ margin: 0 }}>
+                <label className="form-label">Hero Title / Heading</label>
+                <input
+                  type="text"
+                  name="title"
+                  className="form-control"
+                  placeholder="e.g. Inspiring New Hope For Healthy Life"
+                  value={formData.title}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group" style={{ margin: 0 }}>
+                <label className="form-label">Hero Subtitle / Description</label>
+                <textarea
+                  name="subtitle"
+                  rows="3"
+                  className="form-control"
+                  placeholder="e.g. At Maruti, we combine scientific expertise..."
+                  value={formData.subtitle}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label">Top Badge Text</label>
+                  <label className="form-label">Primary Button Text &amp; Link</label>
                   <input
                     type="text"
-                    name="badgeText"
+                    name="primaryBtnText"
                     className="form-control"
-                    placeholder="e.g. • WHO-GMP & ISO 9001:2015 Certified"
-                    value={formData.badgeText}
+                    placeholder="Text (e.g. Explore Our Products)"
+                    value={formData.primaryBtnText}
                     onChange={handleChange}
+                    style={{ marginBottom: '6px' }}
                   />
-                </div>
-
-                <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label">Hero Title / Heading</label>
                   <input
                     type="text"
-                    name="title"
+                    name="primaryBtnLink"
                     className="form-control"
-                    placeholder="e.g. Inspiring New Hope For Healthy Life"
-                    value={formData.title}
+                    placeholder="Link (e.g. /products)"
+                    value={formData.primaryBtnLink}
                     onChange={handleChange}
                   />
                 </div>
 
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label">Hero Subtitle / Description</label>
-                  <textarea
-                    name="subtitle"
-                    rows="3"
+                  <label className="form-label">Secondary Button Text &amp; Link</label>
+                  <input
+                    type="text"
+                    name="secondaryBtnText"
                     className="form-control"
-                    placeholder="e.g. At Maruti, we combine scientific expertise..."
-                    value={formData.subtitle}
+                    placeholder="Text (e.g. About Maruti)"
+                    value={formData.secondaryBtnText}
+                    onChange={handleChange}
+                    style={{ marginBottom: '6px' }}
+                  />
+                  <input
+                    type="text"
+                    name="secondaryBtnLink"
+                    className="form-control"
+                    placeholder="Link (e.g. /about-us)"
+                    value={formData.secondaryBtnLink}
                     onChange={handleChange}
                   />
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                  <div className="form-group" style={{ margin: 0 }}>
-                    <label className="form-label">Primary Button Text &amp; Link</label>
-                    <input
-                      type="text"
-                      name="primaryBtnText"
-                      className="form-control"
-                      placeholder="Text (e.g. Explore Our Products)"
-                      value={formData.primaryBtnText}
-                      onChange={handleChange}
-                      style={{ marginBottom: '6px' }}
-                    />
-                    <input
-                      type="text"
-                      name="primaryBtnLink"
-                      className="form-control"
-                      placeholder="Link (e.g. #products)"
-                      value={formData.primaryBtnLink}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="form-group" style={{ margin: 0 }}>
-                    <label className="form-label">Secondary Button Text &amp; Link</label>
-                    <input
-                      type="text"
-                      name="secondaryBtnText"
-                      className="form-control"
-                      placeholder="Text (e.g. About Maruti)"
-                      value={formData.secondaryBtnText}
-                      onChange={handleChange}
-                      style={{ marginBottom: '6px' }}
-                    />
-                    <input
-                      type="text"
-                      name="secondaryBtnLink"
-                      className="form-control"
-                      placeholder="Link (e.g. #about)"
-                      value={formData.secondaryBtnLink}
-                      onChange={handleChange}
-                    />
-                  </div>
                 </div>
               </div>
-            )}
+            </div>
 
             <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
               <input

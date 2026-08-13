@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LayoutDashboard, Shield, Home, ChevronDown, ChevronRight, Image as ImageIcon, Award, Building2, Quote, Calendar, Briefcase, MessageSquare, Mail, Package, Film, Info, Flag, Layers, UserCheck, Database, MessageCircle, Share2, Sparkles, Tag } from 'lucide-react';
 
-const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'md-message', 'reviews', 'home-video'];
+const homeSubTabs = ['hero-section', 'certifications', 'about-section', 'home-therapeutic-divisions', 'md-message', 'reviews', 'home-video'];
 const aboutSubTabs = ['about-us', 'milestones'];
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
@@ -188,6 +188,16 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
                 >
                   <Building2 size={16} />
                   <span>About Section</span>
+                </button>
+              </li>
+
+              <li className={`menu-item ${activeTab === 'home-therapeutic-divisions' ? 'active' : ''}`}>
+                <button
+                  onClick={() => setActiveTab('home-therapeutic-divisions')}
+                  style={{ padding: '8px 12px', fontSize: '0.88rem' }}
+                >
+                  <Layers size={16} />
+                  <span>Therapeutic</span>
                 </button>
               </li>
 

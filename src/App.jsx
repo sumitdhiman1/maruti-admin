@@ -25,9 +25,10 @@ import SocialSettingsPage from './pages/SocialSettingsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProductBrandsPage from './pages/ProductBrandsPage';
 import ProductCategoriesPage from './pages/ProductCategoriesPage';
+import HomeTherapeuticDivisionsPage from './pages/HomeTherapeuticDivisionsPage';
 
 const VALID_TABS = [
-  'dashboard', 'products', 'product-categories', 'categories', 'product-brands', 'departments', 'about-us', 'milestones', 'divisions', 'divisions-page', 'hero-section', 'certifications', 'about-section',
+  'dashboard', 'products', 'product-categories', 'categories', 'product-brands', 'departments', 'about-us', 'milestones', 'divisions', 'divisions-page', 'hero-section', 'certifications', 'about-section', 'home-therapeutic-divisions',
   'md-message', 'mission-vision', 'reviews', 'events', 'careers',
   'contact-messages', 'newsletter-subscribers', 'home-video', 'whatsapp', 'social-links', 'dump-db'
 ];
@@ -39,6 +40,8 @@ const TAB_ALIASES = {
   'category': 'product-categories',
   'division': 'divisions-page',
   'divisions': 'divisions-page',
+  'home-divisions': 'home-therapeutic-divisions',
+  'therapeutic-divisions': 'home-therapeutic-divisions',
   'about': 'about-us',
   'contact': 'contact-messages',
   'newsletter': 'newsletter-subscribers',
@@ -113,6 +116,7 @@ const MainLayout = () => {
           {activeTab === 'hero-section' && <HeroSection />}
           {activeTab === 'certifications' && <Certifications />}
           {activeTab === 'about-section' && <HomeAboutSectionPage />}
+          {activeTab === 'home-therapeutic-divisions' && <HomeTherapeuticDivisionsPage />}
           {activeTab === 'about-us' && <AboutSectionPage />}
           {(activeTab === 'divisions-page' || activeTab === 'divisions') && <DivisionsPageManager setActiveTab={changeTab} />}
           {activeTab === 'departments' && <DepartmentsPage />}
