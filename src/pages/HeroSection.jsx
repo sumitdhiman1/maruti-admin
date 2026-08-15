@@ -9,6 +9,7 @@ const HeroSection = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState(null);
+  const [modalType, setModalType] = useState('DefaultHero');
   const [toastMessage, setToastMessage] = useState('');
 
   const showToast = (msg) => {
@@ -42,14 +43,32 @@ const HeroSection = () => {
     }
   };
 
+  const handleEditMainHero = () => {
+    setEditingBanner(defaultBanner || null);
+    setModalType('DefaultHero');
+    setIsModalOpen(true);
+  };
+
+  const handleAddFestival = () => {
+    setEditingBanner(null);
+    setModalType('FestivalEvent');
+    setIsModalOpen(true);
+  };
+
+  const handleEditFestival = (item) => {
+    setEditingBanner(item);
+    setModalType('FestivalEvent');
+    setIsModalOpen(true);
+  };
+
   const handleSave = async (formData) => {
     try {
-      if (editingBanner) {
+      if (editingBanner && editingBanner.id) {
         await api.put(`/hero-banners/${editingBanner.id}`, formData);
-        showToast('Hero banner updated successfully! 🎉');
+        showToast(`${formData.bannerType === 'FestivalEvent' ? 'Festival' : 'Main hero'} banner updated successfully! 🎉`);
       } else {
         await api.post('/hero-banners', formData);
-        showToast('New hero banner created successfully! 🎉');
+        showToast(`New ${formData.bannerType === 'FestivalEvent' ? 'festival' : 'main hero'} banner created successfully! 🎉`);
       }
       setIsModalOpen(false);
       setEditingBanner(null);
@@ -114,7 +133,7 @@ const HeroSection = () => {
           </p>
         </div>
 
-        <button className="btn btn-primary" onClick={() => { setEditingBanner(null); setIsModalOpen(true); }} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <button className="btn btn-primary" onClick={handleAddFestival} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Plus size={18} /> Add Festival Event Banner
         </button>
       </div>
@@ -131,15 +150,13 @@ const HeroSection = () => {
             <span className="badge badge-active" style={{ background: '#c054c2', color: 'white', padding: '6px 14px', borderRadius: '20px' }}>
               {activeBannerInfo?.source === 'event' ? `🎉 Active Event: ${activeBannerInfo.banner.eventName}` : '⭐ Main Hero Active'}
             </span>
-            {defaultBanner && (
-              <button
-                className="btn btn-primary btn-sm"
-                style={{ background: '#ffffff', color: '#8d348f', fontWeight: 700, padding: '8px 16px' }}
-                onClick={() => { setEditingBanner(defaultBanner); setIsModalOpen(true); }}
-              >
-                <Edit3 size={16} /> Edit Main Hero Data (Popup)
-              </button>
-            )}
+            <button
+              className="btn btn-primary btn-sm"
+              style={{ background: '#ffffff', color: '#8d348f', fontWeight: 700, padding: '8px 16px' }}
+              onClick={handleEditMainHero}
+            >
+              <Edit3 size={16} /> Edit Main Hero Data (Popup)
+            </button>
           </div>
         </div>
 
@@ -200,7 +217,10 @@ const HeroSection = () => {
           </div>
         ) : (
           <div style={{ padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
-            No main hero banner configured. Click "Edit Main Hero Data (Popup)" to configure.
+            <p>No main hero banner configured yet.</p>
+            <button className="btn btn-primary" onClick={handleEditMainHero}>
+              <Plus size={16} /> Configure Main Hero Banner
+            </button>
           </div>
         )}
       </div>
@@ -217,7 +237,7 @@ const HeroSection = () => {
             </p>
           </div>
 
-          <button className="btn btn-primary" onClick={() => { setEditingBanner(null); setIsModalOpen(true); }} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <button className="btn btn-primary" onClick={handleAddFestival} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Plus size={16} /> Add Festival Banner
           </button>
         </div>
@@ -233,7 +253,7 @@ const HeroSection = () => {
             <p style={{ color: '#64748b', fontSize: '0.88rem', marginTop: '4px', maxWidth: '460px', margin: '4px auto 16px' }}>
               Schedule festival event banners (Diwali, Dashain, Holi, New Year) to automatically take over the hero banner on specific dates.
             </p>
-            <button className="btn btn-primary" onClick={() => { setEditingBanner(null); setIsModalOpen(true); }}>
+            <button className="btn btn-primary" onClick={handleAddFestival}>
               <Plus size={16} /> Create Festival Event Banner
             </button>
           </div>
@@ -292,7 +312,7 @@ const HeroSection = () => {
                   <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '12px', marginTop: '12px', justifyContent: 'flex-end' }}>
                     <button
                       className="btn btn-secondary"
-                      onClick={() => { setEditingBanner(item); setIsModalOpen(true); }}
+                      onClick={() => handleEditFestival(item)}
                       style={{ padding: '6px 14px', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: '6px' }}
                     >
                       <Edit3 size={14} /> Edit Popup
@@ -318,6 +338,7 @@ const HeroSection = () => {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
         banner={editingBanner}
+        modalType={modalType}
       />
     </div>
   );
