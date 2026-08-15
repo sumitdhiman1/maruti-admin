@@ -241,88 +241,90 @@ const HeroModal = ({ isOpen, onClose, onSave, banner = null, modalType = 'Defaul
               placeholder={isFestival ? "Drag & drop festival banner image here or browse" : "Drag & drop hero image here or browse"}
             />
 
-            {/* Banner Content Fields */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label">{isFestival ? "Festival Top Badge / Tag" : "Top Badge Text"}</label>
-                <input
-                  type="text"
-                  name="badgeText"
-                  className="form-control"
-                  placeholder={isFestival ? "e.g. 🎉 Special Festive Promotion" : "e.g. • WHO-GMP & ISO 9001:2015 Certified"}
-                  value={formData.badgeText}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label">{isFestival ? "Festival Headline / Title" : "Hero Title / Heading"}</label>
-                <input
-                  type="text"
-                  name="title"
-                  className="form-control"
-                  placeholder={isFestival ? "e.g. Celebrating The Festival of Lights With Maruti" : "e.g. Inspiring New Hope For Healthy Life"}
-                  value={formData.title}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group" style={{ margin: 0 }}>
-                <label className="form-label">{isFestival ? "Festival Subtitle / Description" : "Hero Subtitle / Description"}</label>
-                <textarea
-                  name="subtitle"
-                  rows="3"
-                  className="form-control"
-                  placeholder={isFestival ? "e.g. Special festive greetings and healthcare wellness offers from Maruti Pharma..." : "e.g. At Maruti, we combine scientific expertise..."}
-                  value={formData.subtitle}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            {/* Home Page Hero Specific Content Fields (Only shown for Main Hero Section) */}
+            {!isFestival && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label">Primary Button Text &amp; Link</label>
+                  <label className="form-label">Top Badge Text</label>
                   <input
                     type="text"
-                    name="primaryBtnText"
+                    name="badgeText"
                     className="form-control"
-                    placeholder="Text (e.g. Explore Our Products)"
-                    value={formData.primaryBtnText}
-                    onChange={handleChange}
-                    style={{ marginBottom: '6px' }}
-                  />
-                  <input
-                    type="text"
-                    name="primaryBtnLink"
-                    className="form-control"
-                    placeholder="Link (e.g. #products or /products)"
-                    value={formData.primaryBtnLink}
+                    placeholder="e.g. • WHO-GMP & ISO 9001:2015 Certified"
+                    value={formData.badgeText}
                     onChange={handleChange}
                   />
                 </div>
 
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label">Secondary Button Text &amp; Link</label>
+                  <label className="form-label">Hero Title / Heading</label>
                   <input
                     type="text"
-                    name="secondaryBtnText"
+                    name="title"
                     className="form-control"
-                    placeholder="Text (e.g. About Maruti)"
-                    value={formData.secondaryBtnText}
-                    onChange={handleChange}
-                    style={{ marginBottom: '6px' }}
-                  />
-                  <input
-                    type="text"
-                    name="secondaryBtnLink"
-                    className="form-control"
-                    placeholder="Link (e.g. #about or /about-us)"
-                    value={formData.secondaryBtnLink}
+                    placeholder="e.g. Inspiring New Hope For Healthy Life"
+                    value={formData.title}
                     onChange={handleChange}
                   />
                 </div>
+
+                <div className="form-group" style={{ margin: 0 }}>
+                  <label className="form-label">Hero Subtitle / Description</label>
+                  <textarea
+                    name="subtitle"
+                    rows="3"
+                    className="form-control"
+                    placeholder="e.g. At Maruti, we combine scientific expertise..."
+                    value={formData.subtitle}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Primary Button Text &amp; Link</label>
+                    <input
+                      type="text"
+                      name="primaryBtnText"
+                      className="form-control"
+                      placeholder="Text (e.g. Explore Our Products)"
+                      value={formData.primaryBtnText}
+                      onChange={handleChange}
+                      style={{ marginBottom: '6px' }}
+                    />
+                    <input
+                      type="text"
+                      name="primaryBtnLink"
+                      className="form-control"
+                      placeholder="Link (e.g. #products or /products)"
+                      value={formData.primaryBtnLink}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label className="form-label">Secondary Button Text &amp; Link</label>
+                    <input
+                      type="text"
+                      name="secondaryBtnText"
+                      className="form-control"
+                      placeholder="Text (e.g. About Maruti)"
+                      value={formData.secondaryBtnText}
+                      onChange={handleChange}
+                      style={{ marginBottom: '6px' }}
+                    />
+                    <input
+                      type="text"
+                      name="secondaryBtnLink"
+                      className="form-control"
+                      placeholder="Link (e.g. #about or /about-us)"
+                      value={formData.secondaryBtnLink}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
 
           </div>
 

@@ -92,8 +92,8 @@ const HeroSection = () => {
     }
   };
 
-  const defaultBanner = banners.find((b) => b.isDefault || b.bannerType === 'DefaultHero') || banners[0];
-  const festivalEvents = banners.filter((b) => b.bannerType === 'FestivalEvent');
+  const defaultBanner = banners.find((b) => b.isDefault || b.bannerType === 'DefaultHero') || banners.find((b) => b.bannerType !== 'FestivalEvent') || banners[0];
+  const festivalEvents = banners.filter((b) => b.bannerType === 'FestivalEvent' || (!b.isDefault && Boolean(b.eventName)));
 
   // Currently live banner to show in Live Preview card
   const livePreview = activeBannerInfo?.banner || defaultBanner;
